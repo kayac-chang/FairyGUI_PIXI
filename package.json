@@ -1,0 +1,46 @@
+{
+  "name": "JSGame",
+  "version": "1.0.0",
+  "description": "Game made by JavaScript",
+  "scripts": {
+    "dos2unix": "find src -type f -exec sed -i 's/^M$//' {} +",
+    "clean": "rm -rf dist & npm run dos2unix",
+    "webpack": "webpack --config ./tools/build.js",
+    "build": "npm run clean && NODE_ENV=production npm run webpack -- --env.mode=production",
+    "watch": "npm run clean && NODE_ENV=development npm run webpack -- --env.mode=development --watch",
+    "dev-server": "webpack-dev-server --config ./tools/build.js",
+    "start": "npm run clean && NODE_ENV=development npm run dev-server -- --env.mode=development --open",
+    "chrome": "open -a 'Google Chrome' http://localhost:3000",
+    "local-server": "node ./server/main.js -- --PORT=3000 --mode=development",
+    "server": "sleep 1 && npm run chrome & NODE_ENV=development npm run local-server"
+  },
+  "keywords": [],
+  "author": "Kayac",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-flow": "^7.0.0",
+    "babel-eslint": "^10.0.1",
+    "babel-loader": "^8.0.5",
+    "csp-html-webpack-plugin": "^3.0.0",
+    "eslint": "^5.13.0",
+    "eslint-config-google": "^0.12.0",
+    "eslint-loader": "^2.1.2",
+    "eslint-plugin-flowtype": "^3.2.1",
+    "express": "^4.16.4",
+    "flow-bin": "^0.92.1",
+    "html-webpack-plugin": "^4.0.0-beta.5",
+    "minimist": "^1.2.0",
+    "ramda": "^0.26.1",
+    "url-loader": "^1.1.2",
+    "webpack": "^4.29.3",
+    "webpack-cli": "^3.2.3",
+    "webpack-dev-middleware": "^3.5.2",
+    "webpack-dev-server": "^3.1.14",
+    "webpack-merge": "^4.2.1"
+  },
+  "dependencies": {
+    "core-js": "^2.6.4"
+  }
+}
