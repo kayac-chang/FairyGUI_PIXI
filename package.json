@@ -4,7 +4,7 @@
   "description": "Game made by JavaScript",
   "scripts": {
     "dos2unix": "find src -type f -exec sed -i 's/^M$//' {} +",
-    "clean": "rm -rf dist & npm run dos2unix",
+    "clean": "rm -rf dist",
     "webpack": "webpack --config ./tools/build.js",
     "build": "npm run clean && NODE_ENV=production npm run webpack -- --env.mode=production",
     "watch": "npm run clean && NODE_ENV=development npm run webpack -- --env.mode=development --watch",
@@ -38,13 +38,13 @@
     "webpack-cli": "^3.2.3",
     "webpack-dev-middleware": "^3.5.2",
     "webpack-dev-server": "^3.1.14",
-    "webpack-merge": "^4.2.1",
-    "win-node-env": "^0.4.0"
+    "webpack-merge": "^4.2.1"
   },
   "dependencies": {
     "core-js": "^2.6.4",
     "pixi.js": "^5.0.0-rc",
     "ramda": "^0.26.1",
+    "xml-js": "^1.6.11",
     "zlibjs": "^0.3.1"
   }
 }

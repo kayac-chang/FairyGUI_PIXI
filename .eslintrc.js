@@ -1,7 +1,8 @@
 module.exports = {
     "extends": "google",
     "parser": "babel-eslint",
-    "plugins": [
-        "flowtype"
-    ],
+    "plugins": ["flowtype"],
+    rules: {
+        "require-jsdoc": 0
+    }
 };
