@@ -2,33 +2,37 @@
 
 import {xml2js} from 'xml-js';
 import {Rectangle} from 'pixi.js';
+import {toPairs, when, has, clone, map, split, prop, assoc, __, zipObj, pipe, mergeRight} from 'ramda';
 
-function getPackageItemType(source: string) {
+function getPackageItemType(source: string): string {
   return ['image', 'swf', 'movieclip', 'sound', 'component', 'font', 'atlas']
       .includes(source) ? source : 'misc';
 }
 
-export function getPackageConfig(data: string) {
+export function getPackageConfig(data: string): {} {
   const {packageDescription} = xml2js(data, {compact: true});
 
   const {id, name} = packageDescription._attributes;
 
-  const packageItems = Object.entries(packageDescription.resources)
+  const packageItems = toPairs(packageDescription.resources)
       .reduce(function(list, [key, _items]) {
         const type = getPackageItemType(key);
 
-        const items = [].concat(_items).map(function(item) {
-          const packageItem = {};
+        const items = [..._items].map(function({_attributes}) {
+          const packageItem = clone(_attributes);
 
-          packageItem.id = item._attributes['id'];
-          packageItem.name = item._attributes['name'];
-          packageItem.file = item._attributes['file'];
+          when(
+              has('size'), toWidthAndHeight
+          )(packageItem);
 
-          const size = item._attributes['size'];
-          if (size) {
-            const [width, height] = size.split(',').map(Number);
-            packageItem.width = width;
-            packageItem.height = height;
+          function toWidthAndHeight(item) {
+            return pipe(
+                prop('size'),
+                split(','),
+                map(Number),
+                zipObj(['width', 'height']),
+                mergeRight(item)
+            )(item);
           }
 
           if (type === 'image') {
@@ -39,7 +43,7 @@ export function getPackageConfig(data: string) {
 
                 if (item._attributes['gridTile']) {
                   packageItem.tiledSlices =
-                  Number(item._attributes['gridTile']);
+                      Number(item._attributes['gridTile']);
                 }
               }
             } else if (item._attributes['scale'] === 'tile') {
