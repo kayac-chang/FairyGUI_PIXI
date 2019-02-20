@@ -2,60 +2,88 @@
 
 import {xml2js} from 'xml-js';
 import {Rectangle} from 'pixi.js';
-import {toPairs, when, has, clone, map, split, prop, assoc, __, zipObj, pipe, mergeRight} from 'ramda';
+import {
+  toPairs, assoc, has, propEq, map, split, zipObj,
+  prop, cond, equals, pipe, mergeRight, when, __, find, defaultTo,
+} from 'ramda';
+
+function toRectangle(args) {
+  return new Rectangle(...args);
+}
 
 function getPackageItemType(source: string): string {
-  return ['image', 'swf', 'movieclip', 'sound', 'component', 'font', 'atlas']
-      .includes(source) ? source : 'misc';
+  const types = [
+    'image', 'swf', 'movieclip', 'sound', 'component', 'font', 'atlas',
+  ];
+
+  return defaultTo('misc',
+      find(equals(source))(types));
+}
+
+function setWidthAndHeight(source) {
+  return pipe(
+      prop('size'),
+      splitToNumber,
+      zipObj(['width', 'height']),
+      mergeRight(source)
+  )(source);
+}
+
+function processForImageType(source) {
+  return cond([
+    [propEq('scale', '9grid'), processFor9Grid],
+    [propEq('scale', 'tile'), processForTile],
+  ])(source);
+}
+
+function processFor9Grid(source) {
+  return pipe(
+      prop('scale9grid'),
+      splitToNumber,
+      toRectangle,
+      assoc('scale9grid', __, source),
+
+      when(has('gridTile'),
+          pipe(
+              prop('gridTile'),
+              Number,
+              assoc('tiledSlices', __, source)))
+  )(source);
+}
+
+function processForTile(source) {
+  return assoc('scaleByTile', true)(source);
+}
+
+function splitToNumber(str) {
+  return pipe(split(','), map(Number))(str);
+}
+
+function getPackageItems({resources}) {
+  return toPairs(resources)
+      .reduce(function(list, [type, items]) {
+        return list.concat(map(getPackageItem, [...items]));
+
+        function isImageType() {
+          return equals('image', getPackageItemType(type));
+        }
+
+        function getPackageItem({_attributes}) {
+          return defaultTo(_attributes,
+              pipe(
+                  when(has('size'), setWidthAndHeight),
+                  when(isImageType, processForImageType))(_attributes));
+        }
+      }, []);
 }
 
 export function getPackageConfig(data: string): {} {
   const {packageDescription} = xml2js(data, {compact: true});
 
+  const packageItems = getPackageItems(packageDescription);
+
   const {id, name} = packageDescription._attributes;
-
-  const packageItems = toPairs(packageDescription.resources)
-      .reduce(function(list, [key, _items]) {
-        const type = getPackageItemType(key);
-
-        const items = [..._items].map(function({_attributes}) {
-          const packageItem = clone(_attributes);
-
-          when(
-              has('size'), toWidthAndHeight
-          )(packageItem);
-
-          function toWidthAndHeight(item) {
-            return pipe(
-                prop('size'),
-                split(','),
-                map(Number),
-                zipObj(['width', 'height']),
-                mergeRight(item)
-            )(item);
-          }
-
-          if (type === 'image') {
-            if (item._attributes['scale'] === '9grid') {
-              if (item._attributes['scale9grid']) {
-                const arr = item._attributes['scale9grid'].split(',');
-                packageItem.scale9Grid = new Rectangle(...arr.map(Number));
-
-                if (item._attributes['gridTile']) {
-                  packageItem.tiledSlices =
-                      Number(item._attributes['gridTile']);
-                }
-              }
-            } else if (item._attributes['scale'] === 'tile') {
-              packageItem.scaleByTile = true;
-            }
-          }
-
-          return packageItem;
-        });
-
-        return list.concat(items);
-      }, []);
 
   return {id, name, packageItems};
 }
+
