@@ -3,7 +3,7 @@
 import {xml2js} from 'xml-js';
 import {Rectangle} from 'pixi.js';
 import {
-  toPairs, assoc, has, propEq, map, split, zipObj,
+  toPairs, assoc, has, propEq, map, split, zipObj, reduce,
   prop, cond, equals, pipe, mergeRight, when, __, find, defaultTo,
 } from 'ramda';
 
@@ -60,30 +60,32 @@ function splitToNumber(str) {
 }
 
 function getPackageItems({resources}) {
-  return toPairs(resources)
-      .reduce(function(list, [type, items]) {
-        return list.concat(map(getPackageItem, [...items]));
+  return reduce(function(list, [type, items]) {
+    return list.concat(map(getPackageItem, [...items]));
 
-        function isImageType() {
-          return equals('image', getPackageItemType(type));
-        }
+    function is(str) {
+      return () => equals(str, getPackageItemType(type));
+    }
 
-        function getPackageItem({_attributes}) {
-          return defaultTo(_attributes,
-              pipe(
-                  when(has('size'), setWidthAndHeight),
-                  when(isImageType, processForImageType))(_attributes));
-        }
-      }, []);
+    function getPackageItem({_attributes}) {
+      const item = assoc('type', getPackageItemType(type))(_attributes);
+
+      return pipe(
+          when(has('size'), setWidthAndHeight),
+          when(is('image'), processForImageType),
+          defaultTo(item)
+      )(item);
+    }
+  }, [], toPairs(resources));
 }
 
-export function getPackageConfig(data: string): {} {
+export function getPackageConfig(data: string): [] {
   const {packageDescription} = xml2js(data, {compact: true});
 
   const packageItems = getPackageItems(packageDescription);
 
   const {id, name} = packageDescription._attributes;
 
-  return {id, name, packageItems};
+  return [id, name, packageItems];
 }
 
