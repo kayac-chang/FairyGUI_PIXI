@@ -8,7 +8,7 @@ import {cursor} from '../util';
  * @param {string} data
  * @return {Promise}
  */
-export function getFairyConfig(data: string): Promise {
+export function toFairyConfig(data: string): Promise {
   const config = {};
 
   const {current, find, take, moveTo} = cursor(data);

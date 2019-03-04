@@ -1,35 +1,32 @@
 import {
-  decompress, getAtlasConfig, getBitmapFont, getFairyConfig, getPackageConfig,
+  decompress, getAtlasConfig, toFairyConfig, getPackageConfig,
 } from './index';
-import {filter, fromPairs, map, pipe, propEq} from 'ramda';
 
-export function addPackage(loader, resKey) {
-  const buf = loader.resources[resKey].data;
-  const data = decompress(buf);
-  return getFairyConfig(data)
-      .then(function(fairyConfig) {
-        // log(fairyConfig);
-        //  Atlas Configs
-        getAtlasConfig(fairyConfig['sprites.bytes']);
-        //  packageId, packageName, packageItems
-        const [packageId, packageName, packageItems] =
-            getPackageConfig(fairyConfig['package.xml']);
+function toUIPackage(fairyConfig) {
+  // const {log} = console;
+  //  Atlas Configs
+  const atlasConfig = getAtlasConfig(fairyConfig['sprites.bytes']);
 
-        //  BitmapFonts
-        const bitmapFonts = pipe(
-            filter(propEq('type', 'font')),
-            map(function(item) {
-              const id = `ui://${packageId}${item.id}`;
-              return [id, getBitmapFont(id, fairyConfig[`${item.id}.fnt`])];
-            }),
-            fromPairs
-        )(packageItems);
+  //  packageId, packageName, packageItems
+  const [, , packageItems] =
+          getPackageConfig(fairyConfig['package.xml']);
 
-        return {
-          packageId,
-          packageName,
-          packageItems,
-          bitmapFonts,
-        };
-      });
+  //  BitmapFonts
+
+  return {
+    atlasConfig,
+    packageItems,
+  };
 }
+
+
+function addPackage(getResource, packageName) {
+  const binary = getResource(packageName).data;
+  const source = decompress(binary);
+  return (
+    toFairyConfig(source)
+        .then(toUIPackage)
+  );
+}
+
+export {addPackage};

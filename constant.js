@@ -12,6 +12,7 @@ const rootPath = __dirname;
 
 //  Project Element Path
 const sourceDir = resolve(rootPath, 'src');
+const testDir = resolve(rootPath, 'test');
 const assetsDir = resolve(rootPath, 'assets');
 const baseDir = resolve(rootPath, 'base');
 const toolDir = resolve(rootPath, 'tools');
@@ -27,6 +28,7 @@ module.exports = readOnly({
   getRootPath: rootPath,
   getPublicPath: publicPath,
   getSourceDir: sourceDir,
+  getTestDir: testDir,
   getAssetsDir: assetsDir,
   getBaseDir: baseDir,
   getToolDir: toolDir,

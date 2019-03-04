@@ -10,6 +10,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const {mapObjIndexed, call} = require('ramda');
 const {
   getSourceDir: sourceDir,
+  getTestDir: testDir,
   getProductDir: productDir,
   getPublicPath: publicPath,
   getAssetsDir: assetsDir,
@@ -21,7 +22,7 @@ const {
 module.exports = function(...args) {
   return {
     //  Entry   ===========================================
-    entry: resolve(sourceDir, 'main.js'),
+    entry: resolve(testDir, 'main.js'),
 
     //  Output  ===========================================
     output: {
@@ -47,7 +48,10 @@ module.exports = function(...args) {
       rules: [
         {
           test: /\.js$/,
-          include: sourceDir,
+          include: [
+            sourceDir,
+            testDir,
+          ],
           sideEffects: false,
           use: [
             {

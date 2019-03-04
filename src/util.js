@@ -1,15 +1,19 @@
 // @flow
 
+import {curry} from 'ramda';
+
 /**
- * Take one word From sentence with RegExp
+ * String Split Util
  *
- * @param {RegExp} regexp
+ * @param {string|RegExp} separator
  * @param {string} source
- * @return {string} word
+ * @return {string}
  */
-export function take(regexp: RegExp, source: string) : string {
-  return RegExp(regexp).exec(source)[0];
-}
+const split = curry(
+    function(separator: string | RegExp, source: string) : string {
+      return source.split(separator);
+    }
+);
 
 /**
  * String Cursor Util
@@ -22,7 +26,7 @@ export function take(regexp: RegExp, source: string) : string {
  *    find: (function(string): number),
  *    moveTo: (function(number): number)}}
  */
-export function cursor(source: string, position = 0) {
+function cursor(source: string, position = 0) {
   return {current, find, take, moveTo};
 
   function find(search: string) {
@@ -42,3 +46,7 @@ export function cursor(source: string, position = 0) {
     return position;
   }
 }
+
+export {
+  cursor, split,
+};

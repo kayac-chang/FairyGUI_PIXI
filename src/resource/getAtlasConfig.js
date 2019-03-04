@@ -1,35 +1,44 @@
 // @flow
+import {drop, map, pipe} from 'ramda';
 import {Rectangle} from 'pixi.js';
+import {split} from '../util';
 
-/**
- * Atlas Config Tokenization
- *
- * @param {string} data
- * @return {{}}
- */
-export function getAtlasConfig(data: string): {} {
-  const [, ...chunks] = data.split(/\n/);
 
-  return chunks.reduce(function(map, chunk) {
-    const [itemId, binIndex, x, y, width, height, _rotate]
-      = chunk.split(/\s/);
+function toName([itemId, binIndex]) {
+  return (
+      Number(binIndex) >= 0 ?
+        `atlas${binIndex}` :
+        `atlas_${split('_', itemId)[0]}`);
+}
 
-    const atlasName = (Number(binIndex) >= 0) ?
-      `atlas${binIndex}` : `atlas_${takeAhead(itemId, '_')}`;
+function toFrame(args) {
+  return new Rectangle(...args.map(Number));
+}
 
-    const frame = new Rectangle(...[x, y, width, height].map(Number));
+function toRotate([rv]) {
+  return (rv === '1' ? 6 : 0);
+}
 
-    const rotate = (_rotate === '1') ? 6 : 0;
+function toOrig([width, height, rotate]) {
+  return (rotate !== 0) && new Rectangle(0, 0, width, height);
+}
 
-    const orig = (rotate !== 0) ?
-      new Rectangle(0, 0, width, height) : undefined;
+function convert([itemId, binIndex, x, y, width, height, rv]) {
+  const name = toName([itemId, binIndex]);
 
-    map[itemId] = {atlasName, frame, rotate, orig};
+  const frame = toFrame([x, y, width, height]);
 
-    return map;
-  }, {});
+  const rotate = toRotate([rv]);
 
-  function takeAhead(source: string, separator: string) {
-    return source.split(separator)[0];
-  }
+  const orig = toOrig([width, height, rotate]);
+
+  return {name, frame, rotate, orig};
+}
+
+export function getAtlasConfig(data: string) {
+  return pipe(
+      split(/\n/), drop(1),
+      map(
+          pipe(split(/\s/), convert))
+  )(data);
 }

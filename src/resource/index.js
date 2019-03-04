@@ -1,4 +1,4 @@
-export * from './getFairyConfig';
+export * from './toFairyConfig';
 export * from './getAtlasConfig';
 export * from './decompress';
 export * from './getPackageConfig';

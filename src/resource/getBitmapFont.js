@@ -5,7 +5,6 @@ import {
   max, prop, defaultTo, gt, __, find, has, always,
 } from 'ramda';
 
-// const {log} = console;
 
 const pushTo = curry(
     function(obj, [type, attrs]) {
