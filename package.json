@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "core-js": "^2.6.4",
-    "pixi.js": "^5.0.0-rc",
+    "pixi.js": "^4.8.6",
     "ramda": "^0.26.1",
     "xml-js": "^1.6.11",
     "zlibjs": "^0.3.1"

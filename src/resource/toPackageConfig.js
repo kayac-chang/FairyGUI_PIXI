@@ -3,9 +3,11 @@
 import {xml2js} from 'xml-js';
 import {Rectangle} from 'pixi.js';
 import {
-  toPairs, assoc, has, propEq, map, split, zipObj, reduce,
+  toPairs, assoc, has, propEq, map, zipObj, reduce,
   prop, cond, equals, pipe, mergeRight, when, __, find, defaultTo,
 } from 'ramda';
+
+import {toNumberPair} from '../util';
 
 function toRectangle(args) {
   return new Rectangle(...args);
@@ -23,7 +25,7 @@ function getPackageItemType(source: string): string {
 function setWidthAndHeight(source) {
   return pipe(
       prop('size'),
-      splitToNumber,
+      toNumberPair,
       zipObj(['width', 'height']),
       mergeRight(source)
   )(source);
@@ -39,7 +41,7 @@ function processForImageType(source) {
 function processFor9Grid(source) {
   return pipe(
       prop('scale9grid'),
-      splitToNumber,
+      toNumberPair,
       toRectangle,
       assoc('scale9grid', __, source),
 
@@ -55,11 +57,7 @@ function processForTile(source) {
   return assoc('scaleByTile', true)(source);
 }
 
-function splitToNumber(str) {
-  return pipe(split(','), map(Number))(str);
-}
-
-function getPackageItems({resources}) {
+function getPackageItems(resources) {
   return reduce(function(list, [type, items]) {
     return list.concat(map(getPackageItem, [...items]));
 
@@ -79,13 +77,14 @@ function getPackageItems({resources}) {
   }, [], toPairs(resources));
 }
 
-export function getPackageConfig(data: string): [] {
+export function toPackageConfig(data: string): [] {
   const {packageDescription} = xml2js(data, {compact: true});
+  const {resources, _attributes} = packageDescription;
 
-  const packageItems = getPackageItems(packageDescription);
+  const resourcesConfig = getPackageItems(resources);
 
-  const {id, name} = packageDescription._attributes;
+  const {id, name} = _attributes;
 
-  return [id, name, packageItems];
+  return [id, name, resourcesConfig];
 }
 
