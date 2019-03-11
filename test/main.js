@@ -1,26 +1,37 @@
 import {Application} from 'pixi.js';
-import {addPackage} from '../src/resource';
-// import {curry, find, propEq, toPairs} from 'ramda';
-// import {toNumberPair} from '../src/util';
+import {addPackage} from '../src';
 
-// const {log} = console;
+function main(...args) {
+  const app = new Application();
+  document.body.appendChild(app.view);
 
-const app = new Application();
-document.body.appendChild(app.view);
-
-app.loader.baseUrl = 'assets';
-app.loader
-    .add('Package1@atlas0.jpg')
-    .add('Package1@atlas2.png')
-    .add('Package1.fui', {xhrType: 'arraybuffer'})
-    .load(onStart);
-
-function onStart(loader, resources) {
-  function getResource(key) {
-    return resources[key];
-  }
-
-  const create = addPackage(getResource, 'Package1');
-
-  create('Main');
+  load(app).then(start);
 }
+
+function load(app) {
+  app.loader.baseUrl = 'assets';
+  app.loader
+      .add('Package1@atlas0.jpg')
+      .add('Package1@atlas2.png')
+      .add('Package1.fui', {xhrType: 'arraybuffer'});
+
+  return new Promise(onLoaded);
+
+  function onLoaded(resolve) {
+    app.loader.load(() => resolve(app));
+  }
+}
+
+function start(app) {
+  const {create} = addPackage(app, 'Package1');
+  const ins = create('Main');
+
+  app.stage.addChild(ins);
+
+  console.log(global.it);
+}
+
+//  Execute
+main();
+
+

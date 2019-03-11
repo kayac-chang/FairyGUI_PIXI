@@ -1,6 +1,6 @@
 //  @flow
 
-export function Cursor(source: string, position = 0) {
+export function cursor(source: string, position = 0) {
   /**
    *  @param {string} search
    *  @return {number}
@@ -10,19 +10,19 @@ export function Cursor(source: string, position = 0) {
   }
 
   /**
-   *  @param {number} to
+   *  @param {number} targetPosition
    *  @return {string}
    */
-  function take(to: number) : string {
-    return source.substring(position, to);
+  function takeTo(targetPosition: number) : string {
+    return source.substring(current(), targetPosition);
   }
 
   /**
-   *  @param {number} next
+   *  @param {number} targetPosition
    *  @return {number}
    */
-  function moveTo(next: number) : number {
-    position = next;
+  function moveTo(targetPosition: number) : number {
+    position = targetPosition;
     return position;
   }
 
@@ -33,5 +33,5 @@ export function Cursor(source: string, position = 0) {
     return position;
   }
 
-  return {find, take, moveTo, current};
+  return {find, takeTo, moveTo, current};
 }

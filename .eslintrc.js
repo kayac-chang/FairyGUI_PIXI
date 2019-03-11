@@ -4,6 +4,7 @@ module.exports = {
   "plugins": ["flowtype"],
   rules: {
     "new-cap": 0,
-    "require-jsdoc": 0
+    "require-jsdoc": 0,
+    "prefer-const": 0,
   }
 };

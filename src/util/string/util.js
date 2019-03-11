@@ -13,6 +13,10 @@ function toNumberPair(source: string) : number[] {
   return map(Number, strPair);
 }
 
+function removeComment(source: string) {
+  return source.replace(/\/\/.*\n/, '');
+}
+
 export {
-  split, toNumberPair,
+  split, toNumberPair, removeComment,
 };
