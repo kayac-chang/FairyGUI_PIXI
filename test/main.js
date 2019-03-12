@@ -1,6 +1,8 @@
 import {Application} from 'pixi.js';
 import {addPackage} from '../src';
 
+global.log = console.log;
+
 function main(...args) {
   const app = new Application();
   document.body.appendChild(app.view);
@@ -23,12 +25,10 @@ function load(app) {
 }
 
 function start(app) {
-  const {create} = addPackage(app, 'Package1');
+  const create = addPackage(app, 'Package1');
   const ins = create('Main');
 
   app.stage.addChild(ins);
-
-  console.log(global.it);
 }
 
 //  Execute

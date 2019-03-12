@@ -6,7 +6,7 @@ import {propEq, map} from 'ramda';
 
 import {toNumberPair, search} from '../util';
 
-// 'image', 'swf', 'movieclip', 'sound', 'comp', 'font', 'atlas', 'misc'
+// 'image', 'swf', 'movieclip', 'sound', 'index', 'font', 'atlas', 'misc'
 
 function getPackageItems(resources) {
   return map(process)(resources);

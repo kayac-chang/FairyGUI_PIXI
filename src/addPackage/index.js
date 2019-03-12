@@ -1,50 +1,89 @@
 import {getFairyConfigMap} from './getFairyConfigMap';
 import {getSpriteConfig} from './getSpriteConfig';
 import {getResourcesConfig} from './getResourcesConfig';
-import {getComponentMap} from './getComponentMap';
 
 import {
-  pipe, omit, map, toPairs, fromPairs,
+  pipe, map, split, propEq, find,
 } from 'ramda';
 
+import {Sprite} from 'pixi.js';
+import {xml2js} from 'xml-js';
+import {construct} from './construct';
+
 function addPackage(app, packageName) {
-  //  Temp Global it
-  global.it = {};
-
-  it.packageName = packageName;
-
-  it.getResource = function(name) {
-    return app.loader.resources[name];
-  };
-
-  const xmlSourceMap =
-      getFairyConfigMap(packageName);
+  //
+  const xmlSourceMap = pipe(
+      getBinaryData,
+      getFairyConfigMap
+  )(packageName);
   // log(xmlSourceMap);
 
-  it.resourcesConfig =
+  const resourcesConfig =
       getResourcesConfig(xmlSourceMap['package.xml']);
   // log(resourcesConfig);
 
-  //  spritesConfig
-  it.spritesConfig =
-      getSpriteConfig(xmlSourceMap['sprites.bytes']);
-  // log(spritesConfig);
+  const sprites = pipe(
+      getSpriteConfig,
+      map(toSprite)
+  )(xmlSourceMap['sprites.bytes']);
+  // log(sprites);
 
-  //  componentsMap
-  const componentsMap = pipe(
-      omit(['sprites.bytes', 'package.xml']),
-      toPairs,
-      map(getComponentMap),
-      fromPairs
-  )(xmlSourceMap);
-  // log(componentsMap);
-
-  delete global.it;
-
-  return {create};
+  return create;
 
   function create(resName) {
-    return componentsMap[resName];
+    //  Temp Global
+    global.it = {constructBy, getSprite};
+
+    const result = constructBy(id(resName));
+
+    result.name = resName;
+
+    delete global.it;
+
+    return result;
+
+    function constructBy(key) {
+      const sourceStr = xmlSourceMap[key + '.xml'];
+
+      const sourceObj = xml2js(sourceStr).elements[0];
+
+      return construct(sourceObj);
+    }
+
+    function getSprite(key) {
+      return sprites[key];
+    }
+
+    function id(resName) {
+      return find(propEq('name', resName), resourcesConfig).id;
+    }
+  }
+
+  function toSprite({id, binIndex, frame}) {
+    const atlasName = getAtlasName(id, binIndex);
+
+    const {file} = find(propEq('id', atlasName), resourcesConfig);
+
+    const {texture} = getResource(packageName + '@' + file);
+
+    texture.frame = frame;
+
+    return new Sprite(texture);
+
+    function getAtlasName(id, binIndex) {
+      return (
+          Number(binIndex) >= 0 ?
+              `atlas${binIndex}` :
+              `atlas_${split('_', id)[0]}`);
+    }
+  }
+
+  function getBinaryData(packageName) {
+    return getResource(packageName + '.fui').data;
+  }
+
+  function getResource(name) {
+    return app.loader.resources[name];
   }
 }
 

@@ -3,14 +3,6 @@
 import {cursor, removeComment, decompressToString} from '../util';
 import {pipe} from 'ramda';
 
-function toResourceName(packageName) {
-  return packageName + '.fui';
-}
-
-function toBinaryData(name) {
-  return it.getResource(name).data;
-}
-
 function tokenization(source: string) : {} {
   const {find, takeTo, moveTo, current} = cursor(source);
 
@@ -36,13 +28,11 @@ function tokenization(source: string) : {} {
   }
 }
 
-function getFairyConfigMap(packageName: string) {
+function getFairyConfigMap(source: string) {
   return pipe(
-      toResourceName,
-      toBinaryData,
       decompressToString,
       tokenization
-  )(packageName);
+  )(source);
 }
 
 export {getFairyConfigMap};
