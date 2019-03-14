@@ -13,8 +13,7 @@ function main(...args) {
 function load(app) {
   app.loader.baseUrl = 'assets';
   app.loader
-      .add('Package1@atlas0.jpg')
-      .add('Package1@atlas2.png')
+      .add('Package1@atlas0.png')
       .add('Package1.fui', {xhrType: 'arraybuffer'});
 
   return new Promise(onLoaded);

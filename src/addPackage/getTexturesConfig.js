@@ -1,5 +1,5 @@
 // @flow
-import {split, reduce, map} from 'ramda';
+import {split, map} from 'ramda';
 import {Rectangle} from 'pixi.js';
 
 // function toRotate([rv]) {
@@ -9,24 +9,23 @@ import {Rectangle} from 'pixi.js';
 // function toOrig([width, height, rotate]) {
 //   return (rotate !== 0) && new Rectangle(0, 0, width, height);
 // }
-function convert(map, [id, binIndex, x, y, width, height, rv]) {
+
+function convert([id, binIndex, x, y, width, height, rv]) {
   // const rotate = toRotate([rv]);
 
   // const orig = toOrig([width, height, rotate]);
 
   const frame = new Rectangle(x, y, width, height);
 
-  map[id] = {id, binIndex, frame};
-
-  return map;
+  return {id, binIndex, frame};
 }
 
-function getSpriteConfig(source) {
+function getTexturesConfig(source) {
   const chunk = split(/\n/, source);
 
   const data = map(split(/\s/))(chunk);
 
-  return reduce(convert, {})(data);
+  return map(convert, data);
 }
 
-export {getSpriteConfig};
+export {getTexturesConfig};

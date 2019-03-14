@@ -52,11 +52,8 @@ function assign(it, attributes) {
       if (isEmpty(it.children)) {
         it.anchor.set(pivotX, pivotY);
       } else {
-        log(it.children);
-        log(attributes);
-
-        forEach(
-            ({anchor}) => anchor && anchor.set(pivotX, pivotY)
+        forEach((it) =>
+          it.anchor && it.anchor.set(pivotX, pivotY)
         )(it.children);
       }
     }
