@@ -11,6 +11,7 @@ import {assign} from './assign';
 import {divide} from 'mathjs';
 
 import {extras, Texture, Container} from 'pixi.js';
+import {xml2js} from 'xml-js';
 const {AnimatedSprite} = extras;
 
 function getAtlasName(id, binIndex) {
@@ -51,12 +52,16 @@ function getFrames({src}) {
   return map(toAnimationFrame)(textureConfigs);
 }
 
+function toJson(sourceStr) {
+  return xml2js(sourceStr).elements[0];
+}
+
 function movieclip({attributes}) {
   const frames = getFrames(attributes);
 
   const anim = new AnimatedSprite(frames);
 
-  const source = it.getSource(attributes.src);
+  const source = toJson(it.getSource(attributes.src));
 
   anim.animationSpeed = toAnimationSpeed(source);
 

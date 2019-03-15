@@ -3,7 +3,10 @@ import {Text, Container, Graphics} from 'pixi.js';
 import {toNumberPair} from '../../util';
 import {assign} from './assign';
 
-import {includes, replace, propSatisfies, split} from 'ramda';
+import {
+  includes, replace, propSatisfies, split,
+  propEq,
+} from 'ramda';
 
 function style({
   fontSize, font, bold, italic, color, leading, letterSpacing, align,
@@ -37,14 +40,21 @@ function text({attributes}) {
   if (includes('ui://', font)) {
     const id = replace('ui://', '')(font);
 
-    const {file} =
+    const config =
         it.selectResourcesConfig(propSatisfies(includes(id), 'id'));
 
-    const source = it.getSource(
-        split('.', file)[0]
-    );
+    log(config);
 
-    log(source);
+    const {file, chars} = it.getSource(split('.', config.file)[0]);
+    log({file, chars});
+
+    const {binIndex} = it.selectTexturesConfig(propEq('id', config.texture));
+
+    log(textureConfig);
+
+    const obj = it.getResource();
+    log(obj);
+
     debugger;
   }
 

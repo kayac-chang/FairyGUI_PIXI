@@ -14,7 +14,7 @@ function toNumberPair(source: string) : number[] {
 }
 
 function removeComment(source: string) {
-  return source.replace(/^\/\/.*\n$/, '');
+  return source.replace(/^\/\/.*\n/g, '');
 }
 
 export {

@@ -1,9 +1,13 @@
-import {filter} from 'ramda';
+import {filter, curry} from 'ramda';
 
-export function select(predicate, target) {
-  const result = filter(predicate, target);
+const select = curry(
+    function(predicate, target) {
+      const result = filter(predicate, target);
 
-  return (
-      (result.length === 1) ? result[0] : result
-  );
-}
+      return (
+          (result.length === 1) ? result[0] : result
+      );
+    }
+);
+
+export {select};

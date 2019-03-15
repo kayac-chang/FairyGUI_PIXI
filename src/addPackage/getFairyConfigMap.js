@@ -1,7 +1,7 @@
 // @flow
 
 import {cursor, removeComment, decompressToString} from '../util';
-import {pipe, split} from 'ramda';
+import {pipe} from 'ramda';
 
 function tokenization(source: string) : {} {
   const {find, takeTo, moveTo, current} = cursor(source);
@@ -9,7 +9,7 @@ function tokenization(source: string) : {} {
   return recursion({});
 
   function recursion(result) {
-    const key = split('.', take(find('|')))[0];
+    const key = take(find('|'));
     const size = Number(take(find('|')));
 
     result[key] = take(current() + size);
