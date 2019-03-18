@@ -1,11 +1,12 @@
-import {Text, Container, Graphics} from 'pixi.js';
+import {Text, Container, Graphics, Texture} from 'pixi.js';
 
 import {toNumberPair} from '../../util';
 import {assign} from './assign';
 
+import {getAtlasName} from './common';
+
 import {
-  includes, replace, propSatisfies, split,
-  propEq,
+  includes, replace, propSatisfies, propEq,
 } from 'ramda';
 
 function style({
@@ -38,22 +39,25 @@ function text({attributes}) {
   holder.endFill();
 
   if (includes('ui://', font)) {
-    const id = replace('ui://', '')(font);
+    const configId = replace('ui://', '')(font);
 
     const config =
-        it.selectResourcesConfig(propSatisfies(includes(id), 'id'));
+        it.selectResourcesConfig(propSatisfies(includes(configId), 'id'));
 
     log(config);
 
-    const {file, chars} = it.getSource(split('.', config.file)[0]);
-    log({file, chars});
+    const {id, binIndex, frame} =
+        it.selectTexturesConfig(propEq('id', config.texture));
 
-    const {binIndex} = it.selectTexturesConfig(propEq('id', config.texture));
+    const atlasName = getAtlasName(id, binIndex);
 
-    log(textureConfig);
+    const {file} = it.selectResourcesConfig(propEq('id', atlasName));
 
-    const obj = it.getResource();
-    log(obj);
+    const {baseTexture} = it.getResource(file).texture;
+
+    const texture = new Texture(baseTexture, frame);
+
+    log(texture);
 
     debugger;
   }

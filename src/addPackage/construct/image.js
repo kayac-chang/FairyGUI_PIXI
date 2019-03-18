@@ -1,10 +1,12 @@
 import {assign} from './assign';
 
+import {getAtlasName} from './common';
+
 import {
-  replace, pipe, propEq, split,
+  replace, pipe, propEq,
 } from 'ramda';
 
-import {Sprite, mesh} from 'pixi.js';
+import {Sprite, mesh, Texture} from 'pixi.js';
 const {NineSlicePlane} = mesh;
 
 function colorHex(str: string) : Number {
@@ -18,7 +20,9 @@ function toSprite({id, binIndex, frame}) {
 
   const {scale9grid} = it.selectResourcesConfig(propEq('id', id));
 
-  let {texture} = it.getResource(file);
+  const {baseTexture} = it.getResource(file).texture;
+
+  const texture = new Texture(baseTexture, frame);
 
   texture.frame = frame;
 
@@ -39,13 +43,6 @@ function toSprite({id, binIndex, frame}) {
   }
 
   return new Sprite(texture);
-
-  function getAtlasName(id, binIndex) {
-    return (
-        Number(binIndex) >= 0 ?
-            `atlas${binIndex}` :
-            `atlas_${split('_', id)[0]}`);
-  }
 }
 
 function image({attributes}) {
