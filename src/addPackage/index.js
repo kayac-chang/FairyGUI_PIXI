@@ -28,7 +28,7 @@ function addPackage(app, packageName) {
       getBinaryData,
       getFairyConfigMap
   )(packageName);
-  log(xmlSourceMap);
+  // log(xmlSourceMap);
 
   const resourcesConfig =
       getResourcesConfig(xmlSourceMap['package.xml']);
@@ -44,7 +44,7 @@ function addPackage(app, packageName) {
       map(bySourceType),
       fromPairs
   )(xmlSourceMap);
-  // log(sourceMap);
+  log(sourceMap);
 
   return create;
 
