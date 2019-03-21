@@ -24,8 +24,6 @@ function toSprite({id, binIndex, frame}) {
 
   const texture = new Texture(baseTexture, frame);
 
-  texture.frame = frame;
-
   if (scale9grid) {
     const [a, b, c, d] = scale9grid;
     const {width, height} = texture;

@@ -5,9 +5,12 @@ import {assign} from './assign';
 
 import {getAtlasName} from './common';
 
+import {divide} from 'mathjs';
+
 import {
   includes, replace, propSatisfies, reduce,
-  split, equals, assoc, pipe, isEmpty,
+  split, equals, assoc, pipe, isEmpty, map,
+  sum, prop,
 } from 'ramda';
 
 function placeHolder(width, height) {
@@ -68,8 +71,8 @@ function textMesh(attributes) {
   );
 
   const comp = assign(new Container(), attributes);
-
   Object.defineProperty(comp, 'text', {get: getText, set: setText});
+  Object.defineProperty(comp, 'align', {get: getAlign, set: setAlign});
 
   comp.text = text;
 
@@ -85,54 +88,79 @@ function textMesh(attributes) {
 
     pipe(
         split(''),
-        reduce(
-            function(x, char) {
+        map(
+            (char) => {
               const texture = textureMap[char];
 
-              if (!isEmpty(texture)) {
-                const sprite = new Sprite(textureMap[char]);
+              if (isEmpty(texture)) return;
 
-                sprite.x = x;
-
-                comp.addChild(sprite);
-
-                x += sprite.width;
-              }
-
-              return x;
-            }, 0)
+              const sprite = new Sprite(textureMap[char]);
+              comp.addChild(sprite);
+              return sprite;
+            }
+        )
     )(text);
+
+    setAlign(attributes.align);
+  }
+
+  function getAlign() {
+    return attributes.align;
+  }
+
+  function setAlign(align) {
+    attributes.align = align;
+
+    const {children} = comp;
+
+    const totalWidth = pipe(map(prop('width')), sum)(children);
+
+    const [compWidth] = toNumberPair(attributes.size);
+
+    const startPoint = {
+      right: compWidth - totalWidth,
+      left: 0,
+      center: divide(compWidth - totalWidth, 2),
+    }[align];
+
+    reduce(
+        function(x, sprite) {
+          sprite.x = x;
+          x += sprite.width;
+          return x;
+        }
+        , startPoint, children);
   }
 }
 
 function normal(attributes) {
-  const comp = assign(new Container(), attributes);
-
   const content = new Text(attributes.text, style(attributes));
 
   const holder =
       placeHolder(...toNumberPair(attributes.size));
 
-  comp.style = content.style;
-
+  const comp = assign(new Container(), attributes);
   Object.defineProperty(comp, 'text', {get: getText, set: setText});
-  // Object.defineProperty(comp.style, 'align', {set: setAlign});
+  Object.defineProperty(comp, 'align', {get: getAlign, set: setAlign});
 
   setAlign(attributes.align);
 
   comp.addChild(holder, content);
-  window.t = comp;
 
   return comp;
 
-  function setAlign(align) {
-    comp.style.align = align;
+  function getAlign() {
+    return content.style.align;
+  }
 
-    if (align === 'right') {
-      content.x = holder.width - content.width;
-    } else if (align === 'left') {
-      content.x = 0;
-    }
+  function setAlign(align = 'left') {
+    content.style.align = align;
+
+    content.x = {
+      right: holder.width - content.width,
+      left: 0,
+      center: divide(holder.width - content.width, 2),
+    }[align];
   }
 
   function getText() {
@@ -145,8 +173,6 @@ function normal(attributes) {
 }
 
 function text({attributes}) {
-  log(attributes);
-
   if (includes('ui://', attributes.font)) {
     return textMesh(attributes);
   }

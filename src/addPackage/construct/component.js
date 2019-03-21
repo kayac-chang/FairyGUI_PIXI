@@ -1,10 +1,11 @@
 import {search} from '../../util';
-import {map, propEq} from 'ramda';
+import {map, propEq, isEmpty} from 'ramda';
+
 import {assign} from './assign';
 
 import {Container} from 'pixi.js';
 
-import {construct} from './index';
+import {construct, transition} from './index';
 
 function component(source) {
   const {attributes} = source;
@@ -16,14 +17,25 @@ function component(source) {
   }
 
   const comp = new Container();
+  it.comp = comp;
 
-  const {elements} =
-      search(propEq('name', 'displayList'), source);
+  const displaySource =
+      search(propEq('name', 'displayList'), source).elements;
 
-  if (elements) {
-    const displayList = map(construct, elements);
+  if (!isEmpty(displaySource)) {
+    const displayList = map(construct, displaySource);
 
     comp.addChild(...displayList);
+  }
+
+  let transitionSource =
+      search(propEq('name', 'transition'), source);
+
+  if (!isEmpty(transitionSource)) {
+    if (!transitionSource.length) {
+      transitionSource = [transitionSource];
+    }
+    map(transition, transitionSource);
   }
 
   return assign(comp, attributes);

@@ -17,4 +17,5 @@ function construct(source) {
   )(source.name);
 }
 
+export * from './transition';
 export {construct};

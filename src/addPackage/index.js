@@ -5,8 +5,10 @@ import {fnt2js} from './fnt2js';
 
 import {select} from '../util';
 
-import {pipe, propEq, omit, split, toPairs, map, fromPairs} from 'ramda';
-
+import {
+  pipe, propEq, omit, split,
+  toPairs, map, fromPairs,
+} from 'ramda';
 import {xml2js} from 'xml-js';
 import {construct} from './construct';
 
@@ -44,7 +46,7 @@ function addPackage(app, packageName) {
       map(bySourceType),
       fromPairs
   )(xmlSourceMap);
-  log(sourceMap);
+  // log(sourceMap);
 
   return create;
 
