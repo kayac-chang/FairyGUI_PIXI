@@ -25,9 +25,7 @@ function load(app) {
 
 function start(app) {
   const create = addPackage(app, 'Package1');
-  const ins = create('Main');
-
-  app.stage.addChild(ins);
+  create('Main');
 }
 
 //  Execute

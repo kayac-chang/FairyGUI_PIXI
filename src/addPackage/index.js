@@ -11,6 +11,7 @@ import {
 } from 'ramda';
 import {xml2js} from 'xml-js';
 import {construct} from './construct';
+import TWEEN from '@tweenjs/tween.js';
 
 function bySourceType([sourceKey, sourceStr]) {
   const [key, type] = split('.', sourceKey);
@@ -64,6 +65,10 @@ function addPackage(app, packageName) {
 
     delete global.it;
 
+    app.stage.addChild(result);
+
+    animate();
+
     return result;
 
     function constructBy(key) {
@@ -93,6 +98,11 @@ function addPackage(app, packageName) {
 
   function getResource(name) {
     return app.loader.resources[packageName + '@' + name];
+  }
+
+  function animate(time = 0) {
+    requestAnimationFrame(animate);
+    TWEEN.update(time);
   }
 }
 

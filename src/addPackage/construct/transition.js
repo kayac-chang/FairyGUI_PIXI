@@ -1,63 +1,53 @@
+import anime from 'animejs';
+import {pipe, split} from 'ramda';
+import {divide, multiply} from 'mathjs';
 import {toNumberPair} from '../../util';
 
-import {divide} from 'mathjs';
-
-import {map, evolve, split} from 'ramda';
-
-import TWEEN, {Tween, Easing} from '@tweenjs/tween.js';
-
-function toXY(str) {
-  const [x, y] = toNumberPair(str);
-  return {x, y};
+function toMilliseconds(str) {
+  return pipe(
+      Number,
+      (num) => divide(num, 24),
+      (num) => multiply(num, 1000),
+  )(str);
 }
 
-function toMilliseconds(fpsStr) {
-  return divide(Number(fpsStr), 24) * 1000;
+function getTarget(str) {
+  return it.comp.getChildByName(split('_', str)[0]);
 }
 
-const toJson = evolve({
-  duration: toMilliseconds,
-  endValue: toXY,
-  startValue: toXY,
-  time: toMilliseconds,
-  tween: (bool) => bool === 'true',
-  target: (str) => split('_', str)[0],
-});
-
-function item({attributes}) {
+function process(attributes) {
   const {
+    // type,
     duration, endValue, startValue, target,
-    time, tween, type,
-  } = toJson(attributes);
+  } = attributes;
 
-  log({
-    duration, endValue, startValue, target,
-    time, tween, type,
+  const [startA, startB] = toNumberPair(startValue);
+  const [endA, endB] = toNumberPair(endValue);
+
+  const result = {
+    x: [startA, endA],
+    y: [startB, endB],
+  };
+
+  return Object.assign(result, {
+    targets: getTarget(target),
+    duration: toMilliseconds(duration),
   });
+}
 
-  const targetElement = it.comp.getChildByName(target);
+function animation({attributes}) {
+  const data = process(attributes);
 
-  new Tween(targetElement)
-      .easing(Easing.Quadratic.Out)
-      .to(endValue, duration)
-      .start();
+  anime(data);
+
+  log(data);
 }
 
 function transition({attributes, elements}) {
-  const {name, autoPlay} = attributes;
-
-  log(name);
-  log(autoPlay);
+  log(attributes);
   log(elements);
 
-  map(item, elements);
-
-  requestAnimationFrame(
-      function animation(time) {
-        requestAnimationFrame(animation);
-        TWEEN.update(time);
-      }
-  );
+  elements.map(animation);
 }
 
 export {transition};
