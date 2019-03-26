@@ -2,16 +2,12 @@ import {assign} from './assign';
 
 import {getAtlasName} from './common';
 
-import {
-  replace, pipe, propEq,
-} from 'ramda';
+import {hexToDecimal} from '../../util';
+
+import {propEq} from 'ramda';
 
 import {Sprite, mesh, Texture} from 'pixi.js';
 const {NineSlicePlane} = mesh;
-
-function colorHex(str: string) : Number {
-  return pipe(replace('#', '0x'), Number)(str);
-}
 
 function toSprite({id, binIndex, frame}) {
   const atlasName = getAtlasName(id, binIndex);
@@ -51,7 +47,7 @@ function image({attributes}) {
       assign(toSprite(config), attributes);
 
   if (attributes.color) {
-    sprite.tint = colorHex(attributes.color);
+    sprite.tint = hexToDecimal(attributes.color);
   }
 
   return sprite;

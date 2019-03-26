@@ -1,10 +1,5 @@
-import {divide, multiply, pi} from 'mathjs';
-import {toNumberPair} from '../../util/string';
+import {toNumberPair, Radians} from '../../util';
 import {forEach, isEmpty} from 'ramda';
-
-function radians(num : number) {
-  return multiply(divide(num, 180), pi);
-}
 
 function assign(it, attributes) {
   //  Name
@@ -27,7 +22,7 @@ function assign(it, attributes) {
 
   //  Rotation
   if (attributes.rotation) {
-    it.rotation = radians(attributes.rotation);
+    it.rotation = Radians(attributes.rotation);
   }
 
   //  Scale
@@ -39,7 +34,7 @@ function assign(it, attributes) {
   //  Skew
   if (attributes.skew) {
     const [skewX, skewY] = toNumberPair(attributes.skew);
-    it.skew.set(-1 * radians(skewX), radians(skewY));
+    it.skew.set(-1 * Radians(skewX), Radians(skewY));
   }
 
   //  Pivot

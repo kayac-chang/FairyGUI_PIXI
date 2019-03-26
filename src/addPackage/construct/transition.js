@@ -1,121 +1,113 @@
 import anime from 'animejs';
 import {
-  pipe, split, map, mergeRight,
-  transpose, test, anyPass,
+  pipe, split, map, mergeRight, transpose,
+  test, anyPass, prop,
 } from 'ramda';
-import {divide, multiply, pi} from 'mathjs';
-import {toNumberPair} from '../../util';
 
-function radians(num: number) {
-  return multiply(divide(num, 180), pi);
+import {
+  toNumberPair, hexToDecimal, rgbToHex,
+  hexToRgb, toDeltaTime,
+} from '../../util';
+
+function toColor(tint) {
+  const [start, end] = map(hexToRgb)(tint);
+
+  const r = [start.r, end.r];
+  const g = [start.g, end.g];
+  const b = [start.b, end.b];
+
+  return {
+    r, g, b,
+    round: 1,
+    update: function () {
+      const {r, g, b} = targets;
+
+      const hex = rgbToHex(r, g, b);
+      const color = hexToDecimal(hex);
+      element.tint = color;
+    },
+  };
 }
 
-function toMilliseconds(str) {
-  return pipe(
-      Number,
-      (num) => divide(num, 24),
-      (num) => multiply(num, 1000),
-  )(str);
+function byType({type}) {
+  return {
+    XY: toPosition,
+    Size: toSize,
+    Alpha: toAlpha,
+    Rotation: toRotation,
+    Scale: toScale,
+    Skew: toSkew,
+    Color: toColor,
+  }[type];
 }
 
-function toPosition([x, y]) {
-  return {x, y};
-}
+function easing(source = 'Quad.Out') {
+  if (anyPass([test(/Bounce+/i), test(/linear/i)])(source)) return 'linear';
 
-function toSize([width, height]) {
-  return {width, height};
-}
-
-function toAlpha([alpha]) {
-  return {alpha};
-}
-
-function toRotation([rotation]) {
-  return {rotation: radians(rotation)};
-}
-
-function toScale([x, y]) {
-  return {x, y};
-}
-
-function toSkew([_x, _y]) {
-  const x = map((x) => -1 * radians(x))(_x);
-  const y = map((x) => radians(x))(_y);
-  return {x, y};
-}
-
-function mapFuncByType({type, target, startValue, endValue}) {
-  const func = (
-      (type === 'XY') ? toPosition :
-          (type === 'Size') ? toSize :
-              (type === 'Alpha') ? toAlpha :
-                  (type === 'Rotation') ? toRotation :
-                      (type === 'Scale') ? toScale :
-                          (type === 'Skew') ? toSkew :
-                              undefined
-  );
-
-  return pipe(
-      map(toNumberPair),
-      transpose,
-      func,
-      mergeRight({targets: getTarget(target)})
-  )([startValue, endValue]);
-
-  function getTarget(str) {
-    const element = it.comp.getChildByName(split('_', str)[0]);
-
-    if (type === 'Scale') {
-      return element.scale;
-    } else if (type === 'Skew') {
-      return element.skew;
-    }
-    return element;
-  }
-}
-
-function toEasing(str = 'Quad.Out') {
-  if (anyPass([
-    test(/Bounce+/i), test(/linear/i),
-  ])(str)) return 'linear';
-
-  const [func, type] = split('.', str);
+  const [func, type] = split('.', source);
 
   return 'ease'.concat(type, func);
 }
 
-function process({attributes}) {
-  const {
-    type, target,
-    time, duration,
-    endValue, startValue,
-    ease,
-  } = attributes;
+function getTarget({type, target}) {
+  const element = it.comp.getChildByName(name(target));
 
-  return mergeRight(
-      mapFuncByType({type, target, startValue, endValue}),
-      {
-        duration: toMilliseconds(duration),
-        time: toMilliseconds(time),
-        easing: toEasing(ease),
-        round: 100,
-      }
-  );
+  const control = getControlTargetByType(type);
+
+  return {element, control};
+
+  function name(target) {
+    return split('_', target)[0];
+  }
+
+  function getControlTargetByType(type) {
+    return (
+        (type === 'Scale') ? element.scale:
+        (type === 'Skew') ? element.skew:
+        (type === 'Color') ? {r: 0, g: 0, b: 0}:
+            element
+    );
+  }
 }
 
-function addTimeFrame(time, frame) {
-  return time.add(frame, frame.time);
+//  {type, target, time, duration, endValue, startValue, ease}
+
+function process(attributes) {
+  const {time, duration, ease} = attributes;
+
+  const byFrameRate = toDeltaTime(24);
+
+  const mapping = byType(attributes);
+
+  const {element, control} = getTarget(attributes);
+
+
+
+
+  return {
+    begin,
+    duration: byFrameRate(duration),
+    time: byFrameRate(time),
+    easing: easing(ease),
+  };
+
+  function begin() {
+    const pair = toNumberPair(attributes.startValue);
+
+    anime.set(control, mapping(...pair));
+  }
 }
+
 
 function transition({attributes, elements}) {
-  log(elements);
+  elements
+      .map(prop('attributes'))
+      .map(process)
+      .reduce(addTimeFrame, anime.timeline());
 
-  const datas = elements.map(process);
-
-  log(datas);
-
-  datas.reduce(
-      addTimeFrame, anime.timeline());
+  function addTimeFrame(time, frame) {
+    return time.add(frame, frame.time);
+  }
 }
 
 export {transition};

@@ -11,8 +11,10 @@ import {assign} from './assign';
 import {divide} from 'mathjs';
 
 import {extras, Texture, Container} from 'pixi.js';
-import {xml2js} from 'xml-js';
 const {AnimatedSprite} = extras;
+
+import {xml2js} from 'xml-js';
+
 
 function getAtlasName(id, binIndex) {
   return (
