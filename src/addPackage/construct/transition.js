@@ -1,43 +1,28 @@
 import anime from 'animejs';
 import {
-  pipe, split, map, mergeRight, transpose,
+  split, mergeWith, has,
   test, anyPass, prop,
 } from 'ramda';
 
 import {
-  toNumberPair, hexToDecimal, rgbToHex,
+  toPair,
   hexToRgb, toDeltaTime,
+  bool,
+  position, size, alpha, rotation,
+  scale, skew, tint, pivot, visible,
 } from '../../util';
 
-function toColor(tint) {
-  const [start, end] = map(hexToRgb)(tint);
-
-  const r = [start.r, end.r];
-  const g = [start.g, end.g];
-  const b = [start.b, end.b];
-
+function mapByType({type}) {
   return {
-    r, g, b,
-    round: 1,
-    update: function () {
-      const {r, g, b} = targets;
-
-      const hex = rgbToHex(r, g, b);
-      const color = hexToDecimal(hex);
-      element.tint = color;
-    },
-  };
-}
-
-function byType({type}) {
-  return {
-    XY: toPosition,
-    Size: toSize,
-    Alpha: toAlpha,
-    Rotation: toRotation,
-    Scale: toScale,
-    Skew: toSkew,
-    Color: toColor,
+    XY: position,
+    Size: size,
+    Alpha: alpha,
+    Rotation: rotation,
+    Scale: scale,
+    Skew: skew,
+    Color: hexToRgb,
+    Pivot: pivot,
+    Visible: visible,
   }[type];
 }
 
@@ -50,11 +35,11 @@ function easing(source = 'Quad.Out') {
 }
 
 function getTarget({type, target}) {
-  const element = it.comp.getChildByName(name(target));
+  const element = it.getChild(name(target));
 
-  const control = getControlTargetByType(type);
+  const targets = getControlTargetByType(type);
 
-  return {element, control};
+  return {element, targets};
 
   function name(target) {
     return split('_', target)[0];
@@ -64,49 +49,108 @@ function getTarget({type, target}) {
     return (
         (type === 'Scale') ? element.scale:
         (type === 'Skew') ? element.skew:
+        (type === 'Pivot') ? element.pivot:
         (type === 'Color') ? {r: 0, g: 0, b: 0}:
             element
     );
   }
 }
 
-//  {type, target, time, duration, endValue, startValue, ease}
+function shouldAnimate(attributes) {
+  return !(has('value', attributes));
+}
 
-function process(attributes) {
-  const {time, duration, ease} = attributes;
+function getFromTo(attributes) {
+  const mapping = mapByType(attributes);
+
+  const {startValue, endValue} = attributes;
+  const start = mapping(...(toPair(startValue)));
+  const end = mapping(...(toPair(endValue)));
+
+  return mergeWith((a, b) => [a, b])(start, end);
+}
+
+function tweenAnimation(attributes) {
+  const fromTo = getFromTo(attributes);
 
   const byFrameRate = toDeltaTime(24);
 
-  const mapping = byType(attributes);
-
-  const {element, control} = getTarget(attributes);
-
-
-
+  const {element, targets} = getTarget(attributes);
 
   return {
-    begin,
-    duration: byFrameRate(duration),
-    time: byFrameRate(time),
-    easing: easing(ease),
+    targets,
+    ...fromTo,
+    duration: byFrameRate(attributes.duration),
+    time: byFrameRate(attributes.time),
+    easing: easing(attributes.ease),
+    update,
   };
 
-  function begin() {
-    const pair = toNumberPair(attributes.startValue);
-
-    anime.set(control, mapping(...pair));
+  function update() {
+    if (attributes.type === 'Color') {
+      element.tint = tint(targets);
+    }
   }
 }
 
+function keyFrame(attributes) {
+  const mapping = mapByType(attributes);
+
+  const result = mapping(...(toPair(attributes.value)));
+
+  const byFrameRate = toDeltaTime(24);
+
+  const {targets} = getTarget(attributes);
+
+  return {
+    time: byFrameRate(time),
+    update,
+  };
+
+  function update(anim) {
+    anim.set(targets, result);
+  }
+}
+
+function process(attributes) {
+  if (shouldAnimate(attributes)) {
+    return tweenAnimation(attributes);
+  }
+  return keyFrame(attributes);
+}
+
+function getLoop(repeat) {
+  if (!repeat) return 1;
+
+  if (repeat === '-1') return true;
+
+  return Number(repeat);
+}
 
 function transition({attributes, elements}) {
-  elements
+  log({attributes, elements});
+
+  const timeLine = elements
       .map(prop('attributes'))
       .map(process)
       .reduce(addTimeFrame, anime.timeline());
 
+  timeLine.name = attributes.name;
+
+  timeLine.loop = getLoop(attributes.autoPlayRepeat);
+
+  timeLine.pause();
+
+  if (isAutoPlay()) timeLine.restart();
+
+  return timeLine;
+
   function addTimeFrame(time, frame) {
     return time.add(frame, frame.time);
+  }
+
+  function isAutoPlay() {
+    return bool(attributes.autoPlay);
   }
 }
 

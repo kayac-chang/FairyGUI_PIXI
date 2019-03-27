@@ -4,7 +4,7 @@ import {
   map,
 } from 'ramda';
 
-import {toNumberPair} from '../../util';
+import {toPair} from '../../util';
 
 import {assign} from './assign';
 
@@ -44,7 +44,7 @@ function toAnimationSpeed({attributes}) {
 function getOffsetPerFrame(source) {
   const el = source.elements[0].elements;
 
-  return map((obj) => toNumberPair(obj.attributes.rect))(el);
+  return map((obj) => toPair(obj.attributes.rect))(el);
 }
 
 function getFrames({src}) {

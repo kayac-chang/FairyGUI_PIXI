@@ -1,4 +1,4 @@
-import {toNumberPair, Radians} from '../../util';
+import {toPair, Radians} from '../../util';
 import {forEach, isEmpty} from 'ramda';
 
 function assign(it, attributes) {
@@ -9,14 +9,14 @@ function assign(it, attributes) {
 
   //  Size
   if (attributes.size) {
-    const [width, height] = toNumberPair(attributes.size);
+    const [width, height] = toPair(attributes.size);
     it.width = width;
     it.height = height;
   }
 
   //  Position
   if (attributes.xy) {
-    const [x, y] = toNumberPair(attributes.xy);
+    const [x, y] = toPair(attributes.xy);
     it.position.set(x, y);
   }
 
@@ -27,19 +27,19 @@ function assign(it, attributes) {
 
   //  Scale
   if (attributes.scale) {
-    const [scaleX, scaleY] = toNumberPair(attributes.scale);
+    const [scaleX, scaleY] = toPair(attributes.scale);
     it.scale.set(scaleX, scaleY);
   }
 
   //  Skew
   if (attributes.skew) {
-    const [skewX, skewY] = toNumberPair(attributes.skew);
+    const [skewX, skewY] = toPair(attributes.skew);
     it.skew.set(-1 * Radians(skewX), Radians(skewY));
   }
 
   //  Pivot
   if (attributes.pivot) {
-    const [pivotX, pivotY] = toNumberPair(attributes.pivot);
+    const [pivotX, pivotY] = toPair(attributes.pivot);
     it.pivot.set(pivotX, pivotY);
 
     //  Anchor

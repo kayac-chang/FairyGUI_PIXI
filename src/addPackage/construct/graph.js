@@ -1,5 +1,5 @@
 import {Graphics} from 'pixi.js';
-import {toNumberPair} from '../../util';
+import {toPair} from '../../util';
 
 import {assign} from './assign';
 
@@ -10,7 +10,7 @@ function colorHex(str = '#ffffffff'): Number {
 }
 
 function rectangle(size) {
-  const [width, height] = toNumberPair(size);
+  const [width, height] = toPair(size);
   const x = 0;
   const y = 0;
 
@@ -18,7 +18,7 @@ function rectangle(size) {
 }
 
 function ellipse(size) {
-  const [w, h] = toNumberPair(size);
+  const [w, h] = toPair(size);
   const x = (w / 2);
   const y = (h / 2);
   const width = (w / 2);

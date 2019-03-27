@@ -1,5 +1,9 @@
 // @flow
-import {pipe, curry, replace} from 'ramda';
+import {
+  pipe, curry, replace, slice, map,
+} from 'ramda';
+
+import {round} from 'mathjs';
 
 const toRadix = curry(
     function toRadix(radix, source) {
@@ -13,16 +17,14 @@ function execHex(source: string) {
   // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
 
-  const preprocess = replace(
+  const preprocess = source.replace(
       shorthandRegex,
       (_, r, g, b) => r + r + g + g + b + b
   );
 
-  const exec = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec;
+  const rgbRegex = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
 
-  return pipe(
-      preprocess, exec
-  )(source);
+  return rgbRegex.exec(preprocess);
 }
 
 type RGB = {
@@ -37,14 +39,12 @@ export function hexToRgb(source: string) : RGB {
       slice(1, 4),
       map(toHex)
   )(source);
-
   return {r, g, b};
 }
 
 export function rgbToHex(r: number, g: number, b: number): string {
-  const num = toHex((1 << 24) + (r << 16) + (g << 8) + b);
-
-  return '#' + String(num).slice(1);
+  [r, g, b] = map(round, [r, g, b]);
+  return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }
 
 export function hexToDecimal(str: string): number {

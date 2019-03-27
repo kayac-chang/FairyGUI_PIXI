@@ -8,9 +8,15 @@ const split = curry(
     }
 );
 
-function toNumberPair(source: string) : number[] {
+function safeConvertNumber(source) {
+  if (isNaN(source)) return source;
+
+  return Number(source);
+}
+
+function toPair(source: string) : number[] | string[] {
   const strPair = split(',', source);
-  return map(Number, strPair);
+  return map(safeConvertNumber, strPair);
 }
 
 function removeComment(source: string) {
@@ -18,5 +24,5 @@ function removeComment(source: string) {
 }
 
 export {
-  split, toNumberPair, removeComment,
+  split, toPair, removeComment,
 };

@@ -2,7 +2,7 @@
 
 import {xml2js} from 'xml-js';
 import {propEq, map} from 'ramda';
-import {toNumberPair, search} from '../util';
+import {toPair, search} from '../util';
 
 // 'image', 'swf', 'movieclip', 'sound', 'index', 'font', 'atlas', 'misc'
 
@@ -43,7 +43,7 @@ export function getResourcesConfig(source: string) {
     }
 
     function setWidthAndHeight(source) {
-      const [width, height] = toNumberPair(source.size);
+      const [width, height] = toPair(source.size);
 
       source.size = {width, height};
 
@@ -61,7 +61,7 @@ export function getResourcesConfig(source: string) {
     function processFor9Grid(source) {
       const {scale9grid, gridTile} = source;
 
-      source.scale9grid = toNumberPair(scale9grid);
+      source.scale9grid = toPair(scale9grid);
 
       if (gridTile) {
         source.tiledSlices = Number(gridTile);

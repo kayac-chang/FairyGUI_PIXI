@@ -1,5 +1,8 @@
 import {search} from '../../util';
-import {map, propEq, isEmpty} from 'ramda';
+import {
+  map, propEq, isEmpty, filter,
+  has, pipe, find,
+} from 'ramda';
 
 import {assign} from './assign';
 
@@ -17,7 +20,7 @@ function component(source) {
   }
 
   const comp = new Container();
-  it.comp = comp;
+  it.getChild = (name) => comp.getChildByName(name);
 
   const displaySource =
       search(propEq('name', 'displayList'), source).elements;
@@ -28,15 +31,17 @@ function component(source) {
     comp.addChild(...displayList);
   }
 
-  let transitionSource =
-      search(propEq('name', 'transition'), source);
+  const transitions = pipe(
+      search(propEq('name', 'transition')),
+      (args) => [].concat(args),
+      filter(has('elements')),
+      map(transition),
+  )(source);
 
-  if (!isEmpty(transitionSource)) {
-    if (!transitionSource.length) {
-      transitionSource = [transitionSource];
-    }
-    map(transition, transitionSource);
-  }
+  comp.getTransitions = () => transitions;
+
+  comp.getTransition =
+      (name) => find(propEq('name', name), transitions);
 
   return assign(comp, attributes);
 }

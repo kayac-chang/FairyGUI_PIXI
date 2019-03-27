@@ -1,22 +1,26 @@
+import {curry} from 'ramda';
 
-function search(predicate, data) {
-  const result = recursion(data);
-  return result.length === 1 ? result[0] : result;
+const search = curry(
+    function(predicate, data) {
+      const result = recursion(data);
+      return result.length === 1 ? result[0] : result;
 
-  function recursion(data, result = []) {
-    if (predicate(data)) {
-      result.push(data);
-    }
+      function recursion(data, result = []) {
+        if (predicate(data)) {
+          result.push(data);
+        }
 
-    const {elements} = data;
-    if (elements && elements.length) {
-      for (const element of elements) {
-        recursion(element, result);
+        const {elements} = data;
+        if (elements && elements.length) {
+          for (const element of elements) {
+            recursion(element, result);
+          }
+        }
+
+        return result;
       }
     }
+);
 
-    return result;
-  }
-}
 
 export {search};

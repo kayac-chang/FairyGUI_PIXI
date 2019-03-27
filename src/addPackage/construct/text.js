@@ -1,6 +1,6 @@
 import {Text, Container, Graphics, Texture, Rectangle, Sprite} from 'pixi.js';
 
-import {toNumberPair} from '../../util';
+import {toPair} from '../../util';
 import {assign} from './assign';
 
 import {getAtlasName} from './common';
@@ -115,7 +115,7 @@ function textMesh(attributes) {
 
     const totalWidth = pipe(map(prop('width')), sum)(children);
 
-    const [compWidth] = toNumberPair(attributes.size);
+    const [compWidth] = toPair(attributes.size);
 
     const startPoint = {
       right: compWidth - totalWidth,
@@ -137,7 +137,7 @@ function normal(attributes) {
   const content = new Text(attributes.text, style(attributes));
 
   const holder =
-      placeHolder(...toNumberPair(attributes.size));
+      placeHolder(...toPair(attributes.size));
 
   const comp = assign(new Container(), attributes);
   Object.defineProperty(comp, 'text', {get: getText, set: setText});

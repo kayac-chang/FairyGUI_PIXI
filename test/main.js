@@ -25,7 +25,9 @@ function load(app) {
 
 function start(app) {
   const create = addPackage(app, 'Package1');
-  create('Main');
+  const comp = create('Main');
+
+  window.comp = comp;
 }
 
 //  Execute

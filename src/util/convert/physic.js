@@ -1,6 +1,8 @@
 // @flow
 import {divide, multiply, pi as PI} from 'mathjs';
 import {curry} from 'ramda';
+import {hexToDecimal, rgbToHex} from './color';
+import {bool} from './type';
 
 export function Radians(source: number): number {
   const theta = divide(source, 180);
@@ -39,10 +41,24 @@ export function rotation(_rotation) {
   return {rotation};
 }
 
-export function skew(_x, _y) {
+export function skew(x, y) {
   return {
-    x: -1 * Radians(_x),
-    y: Radians(_y),
+    x: -1 * Radians(x),
+    y: Radians(y),
   };
+}
+
+export function tint({r, g, b}) {
+  return hexToDecimal(
+      rgbToHex(r, g, b)
+  );
+}
+
+export function pivot(x, y) {
+  return {x, y};
+}
+
+export function visible(visible) {
+  return {visible: bool(visible)};
 }
 
