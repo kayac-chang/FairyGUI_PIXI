@@ -15,17 +15,15 @@ import {construct} from './construct';
 function bySourceType([sourceKey, sourceStr]) {
   const [key, type] = split('.', sourceKey);
 
-  const value = ((type) => (
-      (type === 'xml') ? xml2js(sourceStr).elements[0] :
-          (type === 'fnt') ? fnt2js(sourceStr) :
-              undefined
-  ))(type);
+  const value = {
+    xml: xml2js(sourceStr).elements[0],
+    fnt: fnt2js(sourceStr),
+  }[type];
 
   return [key, value];
 }
 
 function addPackage(app, packageName) {
-  //
   const xmlSourceMap = pipe(
       getBinaryData,
       getFairyConfigMap
@@ -60,11 +58,9 @@ function addPackage(app, packageName) {
 
     const result = constructBy(id(resName));
 
-    result.name = resName;
-
     delete global.it;
 
-    app.stage.addChild(result);
+    result.name = resName;
 
     return result;
 
@@ -87,14 +83,14 @@ function addPackage(app, packageName) {
     function id(resName) {
       return selectResourcesConfig(propEq('name', resName)).id;
     }
+
+    function getResource(name) {
+      return app.loader.resources[packageName + '@' + name];
+    }
   }
 
   function getBinaryData(packageName) {
     return app.loader.resources[packageName + '.fui'].data;
-  }
-
-  function getResource(name) {
-    return app.loader.resources[packageName + '@' + name];
   }
 }
 

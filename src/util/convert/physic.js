@@ -61,4 +61,3 @@ export function pivot(x, y) {
 export function visible(visible) {
   return {visible: bool(visible)};
 }
-

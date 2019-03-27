@@ -27,6 +27,8 @@ function start(app) {
   const create = addPackage(app, 'Package1');
   const comp = create('Main');
 
+  app.stage.addChild(comp);
+
   window.comp = comp;
 }
 

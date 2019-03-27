@@ -4,7 +4,7 @@ import {movieclip} from './movieclip';
 import {graph} from './graph';
 import {text} from './text';
 
-function construct(source) {
+export function construct(source) {
   return (
     (name) => (
               (name === 'image') ? image(source) :
@@ -16,6 +16,3 @@ function construct(source) {
     )
   )(source.name);
 }
-
-export * from './transition';
-export {construct};
