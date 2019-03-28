@@ -1,15 +1,15 @@
+// @flow
+
 import {
   split, pipe, map, trim, filter,
   fromPairs, evolve, replace,
 } from 'ramda';
 
-import {select} from '../util';
-
-const {fromCodePoint} = String;
+import {select} from '../../util';
 
 const chunkToJSON = pipe(
     map(
-        function(source) {
+        (source) => {
           const [key, _value] = split('=', source);
           const value = replace(/"/g, '', _value);
           return [key, value];
@@ -23,7 +23,7 @@ function toFontData([, ...source]) {
       chunkToJSON,
 
       evolve({
-        id: fromCodePoint,
+        id: String.fromCodePoint,
         x: Number,
         y: Number,
         width: Number,
@@ -34,18 +34,18 @@ function toFontData([, ...source]) {
   )(source);
 }
 
-function fnt2js(source) {
-  const chunkData =
-      pipe(
-          trim, split(/\n/),
+export function fnt2js(source: string): {} {
+  const chunkData = pipe(
+      trim,
+      split(/\n/),
 
-          map(
-              pipe(
-                  trim,
-                  split(/\s+/),
-              )
+      map(
+          pipe(
+              trim,
+              split(/\s+/)
           )
-      )(source);
+      )
+  )(source);
 
   const {file} = pipe(
       select(([type]) => type === 'page'),
@@ -60,5 +60,3 @@ function fnt2js(source) {
 
   return {file, chars};
 }
-
-export {fnt2js};

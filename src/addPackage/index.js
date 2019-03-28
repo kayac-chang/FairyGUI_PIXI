@@ -3,7 +3,9 @@
 import {getFairyConfigMap} from './parse/getFairyConfigMap';
 import {getTexturesConfig} from './getTexturesConfig';
 import {getResourcesConfig} from './getResourcesConfig';
-import {fnt2js} from './fnt2js';
+
+import {fnt2js} from './parse/fnt2js';
+import {xml2js} from 'xml-js';
 
 import {select} from '../util';
 
@@ -12,7 +14,7 @@ import {
   toPairs, map, fromPairs,
 } from 'ramda';
 
-import {xml2js} from 'xml-js';
+
 import {construct} from './construct';
 
 import {Application, Container} from 'pixi.js';
@@ -59,8 +61,10 @@ function addPackage(app: Application, packageName: string) {
   )(packageName);
   // log(xmlSourceMap);
 
-  const resourcesConfig =
-      getResourcesConfig(xmlSourceMap['package.xml']);
+  const resourcesConfig = pipe(
+      xml2js,
+      getResourcesConfig
+  )(xmlSourceMap['package.xml']);
   // log(resourcesConfig);
 
   const texturesConfig =

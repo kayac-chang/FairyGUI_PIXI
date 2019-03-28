@@ -1,4 +1,4 @@
-# PIXI_FairyGUI
+# FairyGUI_PIXI
 
 ### Description
 

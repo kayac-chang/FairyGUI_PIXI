@@ -1,15 +1,12 @@
 // @flow
 
-import {xml2js} from 'xml-js';
 import {propEq, map} from 'ramda';
 import {toPair, search} from '../util';
 
 // 'image', 'swf', 'movieclip', 'sound', 'index', 'font', 'atlas', 'misc'
 
 
-export function getResourcesConfig(source: string) {
-  const json = xml2js(source);
-
+export function getResourcesConfig(json: {}) {
   const packageID = json.elements[0].attributes.id;
 
   const {elements} = search(propEq('name', 'resources'), json);

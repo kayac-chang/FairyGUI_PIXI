@@ -1,7 +1,7 @@
 {
-  "name": "JSGame",
+  "name": "FairyGUI_PIXI",
   "version": "1.0.0",
-  "description": "Game made by JavaScript",
+  "description": "This library create an interface between both to make development easier",
   "scripts": {
     "dos2unix": "find src -type f -exec sed -i 's/^M$//' {} +",
     "clean": "rm -rf dist",
@@ -9,10 +9,7 @@
     "build": "npm run clean && NODE_ENV=production npm run webpack -- --env.mode=production",
     "watch": "npm run clean && NODE_ENV=development npm run webpack -- --env.mode=development --watch",
     "dev-server": "webpack-dev-server --config ./tools/build.js",
-    "start": "npm run clean && NODE_ENV=development npm run dev-server -- --env.mode=development --open",
-    "chrome": "open -a 'Google Chrome' http://localhost:3000",
-    "local-server": "node ./server/main.js -- --PORT=3000 --mode=development",
-    "server": "sleep 1 && npm run chrome & NODE_ENV=development npm run local-server"
+    "start": "npm run clean && NODE_ENV=development npm run dev-server -- --env.mode=development --open"
   },
   "keywords": [],
   "author": "Kayac",
