@@ -18,19 +18,19 @@
 
 ## addPackage
 
->  Analysing Fairy Config File
->  and return a function for create Entities with specify name.
+>  Analysing Fairy Config File  
+>  and return a function for create Entities with specify name.  
 
 ### Notice
 
->  Make sure all Resources used by the package were loaded.
->  This Function use PIXI.Application built-in loader
->  to fetch necessary resources.
+>  Make sure all Resources used by the package were loaded.  
+>  This Function use PIXI.Application built-in loader  
+>  to fetch necessary resources.  
 
 ### Usage
 
->  This function will fetch that file from loader
->  and return a factory function.
+>  This function will fetch that file from loader  
+>  and return a factory function.  
 
 ### Example
 
@@ -51,9 +51,9 @@ Returns **function ([string][8]): PIXI.Container**
 
 ## create
 
-> The Function create can take specify component name,
-> which you created by fairyGUI Editor
-> and return the PIXI.Container for that entity.
+> The Function create can take specify component name,  
+> which you created by fairyGUI Editor  
+> and return the PIXI.Container for that entity.  
 
 ### Parameters
 
