@@ -8,13 +8,11 @@ import {
 import {select} from '../../util';
 
 const chunkToJSON = pipe(
-    map(
-        (source) => {
-          const [key, _value] = split('=', source);
-          const value = replace(/"/g, '', _value);
-          return [key, value];
-        }
-    ),
+    map((source) => {
+      const [key, _value] = split('=', source);
+      const value = replace(/"/g, '', _value);
+      return [key, value];
+    }),
     fromPairs
 );
 

@@ -1,6 +1,6 @@
 // @flow
 
-import {map} from 'ramda';
+import {map, split} from 'ramda';
 
 function safeConvertNumber(source) {
   if (isNaN(source)) return source;

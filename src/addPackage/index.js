@@ -19,17 +19,6 @@ import {construct} from './construct';
 
 import {Application, Container} from 'pixi.js';
 
-function bySourceType([sourceKey, sourceStr]) {
-  const [key, type] = split('.', sourceKey);
-
-  const value = {
-    xml: xml2js(sourceStr).elements[0],
-    fnt: fnt2js(sourceStr),
-  }[type];
-
-  return [key, value];
-}
-
 /**
  *   >  Analysing Fairy Config File
  *   >  and return a factory function.
@@ -81,6 +70,18 @@ function addPackage(app: Application, packageName: string) {
 
   return create;
 
+  function bySourceType([sourceKey, sourceStr]) {
+    const [key, type] = split('.', sourceKey);
+
+    const value = (
+        (type === 'xml') ? xml2js(sourceStr).elements[0]:
+            (type === 'fnt') ? fnt2js(sourceStr):
+                undefined
+    );
+
+    return [key, value];
+  }
+
   /**
    * > The Function create can take specify component name,
    * > which you created by fairyGUI Editor
@@ -97,37 +98,38 @@ function addPackage(app: Application, packageName: string) {
       getResource, selectTexturesConfig,
     };
 
-    const result = constructBy(id(resName));
+    const id = findIdBy(resName);
+    const result = constructBy(id);
 
     delete global.it;
 
     result.name = resName;
 
     return result;
+  }
 
-    function constructBy(key) {
-      return construct(sourceMap[key]);
-    }
+  function constructBy(key: string) {
+    return construct(sourceMap[key]);
+  }
 
-    function getSource(key) {
-      return sourceMap[key];
-    }
+  function getSource(key: string) {
+    return sourceMap[key];
+  }
 
-    function selectResourcesConfig(predicate) {
-      return select(predicate, resourcesConfig);
-    }
+  function selectResourcesConfig(predicate) {
+    return select(predicate, resourcesConfig);
+  }
 
-    function selectTexturesConfig(predicate) {
-      return select(predicate, texturesConfig);
-    }
+  function selectTexturesConfig(predicate) {
+    return select(predicate, texturesConfig);
+  }
 
-    function id(resName) {
-      return selectResourcesConfig(propEq('name', resName)).id;
-    }
+  function findIdBy(resName: string) {
+    return selectResourcesConfig(propEq('name', resName)).id;
+  }
 
-    function getResource(name) {
-      return app.loader.resources[packageName + '@' + name];
-    }
+  function getResource(name) {
+    return app.loader.resources[packageName + '@' + name];
   }
 
   function getBinaryData(packageName) {
