@@ -37,10 +37,10 @@
 
 ### Parameters
 
--   `app` **PIXI.Application** 
+-   `app` **[PIXI.Application][11]** 
 -   `packageName` **[string][8]** 
 
-Returns **function ([string][8]): PIXI.Container** 
+Returns **function ([string][8]): [PIXI.Container][12]** 
 
 ## create
 
@@ -52,7 +52,7 @@ Returns **function ([string][8]): PIXI.Container**
 
 -   `resName` **[string][8]** 
 
-Returns **PIXI.Container** 
+Returns **[PIXI.Container][12]** 
 
 [1]: #addpackage
 
@@ -73,3 +73,9 @@ Returns **PIXI.Container**
 [9]: http://www.fairygui.com/
 
 [10]: http://www.pixijs.com/
+
+[11]: http://pixijs.download/release/docs/PIXI.Application.html
+
+[12]: http://pixijs.download/release/docs/PIXI.Container.html
+
+
