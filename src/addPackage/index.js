@@ -30,16 +30,12 @@ function bySourceType([sourceKey, sourceStr]) {
 
 /**
  *   >  Analysing Fairy Config File
- *   >  and return a function for create Entities with specify name.
+ *   >  and return a factory function.
  *
  *   ### Notice
  *   >  Make sure all Resources used by the package were loaded.
  *   >  This Function use PIXI.Application built-in loader
  *   >  to fetch necessary resources.
- *
- *   ### Usage
- *   >  This function will fetch that file from loader
- *   >  and return a factory function.
  *
  *   ### Example
  *   ```
