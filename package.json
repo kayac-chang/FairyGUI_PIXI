@@ -25,6 +25,7 @@
     "babel-loader": "^8.0.5",
     "copy-webpack-plugin": "^4.6.0",
     "csp-html-webpack-plugin": "^3.0.0",
+    "documentation": "^9.3.1",
     "eslint": "^5.13.0",
     "eslint-config-google": "^0.12.0",
     "eslint-loader": "^2.1.2",

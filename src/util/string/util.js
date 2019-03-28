@@ -1,12 +1,6 @@
 // @flow
 
-import {curry, map} from 'ramda';
-
-const split = curry(
-    function(separator: string | RegExp, source: string) : string {
-      return source.split(separator);
-    }
-);
+import {map} from 'ramda';
 
 function safeConvertNumber(source) {
   if (isNaN(source)) return source;
@@ -24,5 +18,5 @@ function removeComment(source: string) {
 }
 
 export {
-  split, toPair, removeComment,
+  toPair, removeComment,
 };

@@ -7,5 +7,6 @@ module.exports = {
     "require-jsdoc": 0,
     "prefer-const": 0,
     "no-invalid-this": 0,
+    "no-trailing-spaces":0,
   }
 };

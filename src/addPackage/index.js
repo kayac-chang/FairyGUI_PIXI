@@ -1,4 +1,6 @@
-import {getFairyConfigMap} from './getFairyConfigMap';
+// @flow
+
+import {getFairyConfigMap} from './parse/getFairyConfigMap';
 import {getTexturesConfig} from './getTexturesConfig';
 import {getResourcesConfig} from './getResourcesConfig';
 import {fnt2js} from './fnt2js';
@@ -9,8 +11,11 @@ import {
   pipe, propEq, omit, split,
   toPairs, map, fromPairs,
 } from 'ramda';
+
 import {xml2js} from 'xml-js';
 import {construct} from './construct';
+
+import {Application, Container} from 'pixi.js';
 
 function bySourceType([sourceKey, sourceStr]) {
   const [key, type] = split('.', sourceKey);
@@ -23,7 +28,35 @@ function bySourceType([sourceKey, sourceStr]) {
   return [key, value];
 }
 
-function addPackage(app, packageName) {
+/**
+ *   >  Analysing Fairy Config File
+ *   >  and return a function for create Entities with specify name.
+ *
+ *   ### Notice:
+ *   >  Make sure all Resources used by the package were loaded.
+ *   >  This Function use PIXI.Application built-in loader
+ *   >  to fetch necessary resources.
+ *
+ *   ### Usage:
+ *   >  This function will fetch that file from loader
+ *   >  and return a factory function.
+ *
+ *   ### Example:
+ *   ```
+ *   // Suppose your config filename is package1.fui
+ *   const create = addPackage(app, 'package1');
+ *
+ *   // Suppose 'main' is your component name.
+ *   const mainComp = create('main');
+ *
+ *   app.stage.addChild(mainComp);
+ *   ```
+ *
+ * @param {PIXI.Application} app
+ * @param {string} packageName
+ * @return { function(string): PIXI.Container }
+ */
+function addPackage(app: Application, packageName: string) {
   const xmlSourceMap = pipe(
       getBinaryData,
       getFairyConfigMap
@@ -48,7 +81,15 @@ function addPackage(app, packageName) {
 
   return create;
 
-  function create(resName) {
+  /**
+   * > The Function create can take specify component name,
+   * > which you created by fairyGUI Editor
+   * > and return the PIXI.Container for that entity.
+   *
+   * @param {string} resName
+   * @return {PIXI.Container}
+   */
+  function create(resName: string): Container {
     //  Temp Global
     global.it = {
       getSource,
