@@ -3,74 +3,80 @@
 import {propEq, map} from 'ramda';
 import {toPair, search} from '../util';
 
-// 'image', 'swf', 'movieclip', 'sound', 'index', 'font', 'atlas', 'misc'
+function processForImageType(attributes) {
+  return (
+    (scale) => (
+          (scale === '9grid') ? processFor9Grid(attributes) :
+              (scale === 'tile') ? processForTile(attributes) :
+                  attributes
+    )
+  )(attributes.scale);
 
+  function processFor9Grid(attributes) {
+    const {scale9grid, gridTile} = attributes;
 
-export function getResourcesConfig(json: {}) {
+    attributes.scale9grid = toPair(scale9grid);
+
+    if (gridTile) {
+      attributes.tiledSlices = Number(gridTile);
+    }
+
+    return attributes;
+  }
+
+  function processForTile(attributes) {
+    attributes.scaleByTile = true;
+    return attributes;
+  }
+}
+
+function setWidthAndHeight(attributes) {
+  const [width, height] = toPair(attributes.size);
+
+  attributes.size = {width, height};
+
+  return attributes;
+}
+
+function getPackageItems(packageID, resources) {
+  //
+  return map(process)(resources);
+
+  function process({name, attributes}) {
+    //  Attributes Condition
+    if (attributes.size) {
+      attributes = setWidthAndHeight(attributes);
+    }
+
+    //  Type Condition
+    attributes.type = name;
+
+    /*
+     *  Package Type:
+     *    'image', 'swf', 'movieclip', 'sound', 'index', 'font', 'atlas', 'misc'
+     */
+
+    return (
+        (attributes.type === 'image') ? processForImageType(attributes):
+            (attributes.type === 'font') ? processForFontType(attributes):
+                attributes
+    );
+  }
+
+  function processForFontType(source) {
+    source.id = packageID + source.id;
+    return source;
+  }
+}
+
+/*
+ * Return all resources config used by this package.
+ */
+export function getResourcesConfig(json: Object): Array<Object> {
   const packageID = json.elements[0].attributes.id;
 
   const {elements} = search(propEq('name', 'resources'), json);
 
-  return getPackageItems(elements);
-
-  function getPackageItems(resources) {
-    return map(process)(resources);
-
-    function process({name, attributes}) {
-      attributes.type = name;
-
-      //  Attributes Condition
-      if (attributes.size) {
-        attributes = setWidthAndHeight(attributes);
-      }
-
-      //  Type Condition
-      if (attributes.type === 'image') {
-        attributes = processForImageType(attributes);
-      } else if (attributes.type === 'font') {
-        attributes = processForFontType(attributes);
-      }
-
-      return attributes;
-    }
-
-    function processForFontType(source) {
-      source.id = packageID + source.id;
-      return source;
-    }
-
-    function setWidthAndHeight(source) {
-      const [width, height] = toPair(source.size);
-
-      source.size = {width, height};
-
-      return source;
-    }
-
-    function processForImageType(source) {
-      return (({scale}) => (
-          (scale === '9grid') ? processFor9Grid(source) :
-              (scale === 'tile') ? processForTile(source) :
-                  source
-      ))(source);
-    }
-
-    function processFor9Grid(source) {
-      const {scale9grid, gridTile} = source;
-
-      source.scale9grid = toPair(scale9grid);
-
-      if (gridTile) {
-        source.tiledSlices = Number(gridTile);
-      }
-
-      return source;
-    }
-
-    function processForTile(source) {
-      source.scaleByTile = true;
-      return source;
-    }
-  }
+  return getPackageItems(packageID, elements);
 }
 

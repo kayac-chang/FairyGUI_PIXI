@@ -9,7 +9,7 @@ import {divide} from 'mathjs';
 
 import {
   includes, replace, propSatisfies, reduce,
-  split, equals, assoc, pipe, isEmpty, map,
+  split, equals, assoc, pipe, map,
   sum, prop,
 } from 'ramda';
 
@@ -71,34 +71,25 @@ function textMesh(attributes) {
   );
 
   const comp = assign(new Container(), attributes);
+
   Object.defineProperty(comp, 'text', {get: getText, set: setText});
   Object.defineProperty(comp, 'align', {get: getAlign, set: setAlign});
 
-  comp.text = text;
+  setText(text);
 
   return comp;
 
   function getText() {
-    return comp._text;
+    return attributes.text;
   }
 
   function setText(text) {
-    comp._text = text;
+    attributes.text = text;
     comp.children = [];
 
     pipe(
         split(''),
-        map(
-            (char) => {
-              const texture = textureMap[char];
-
-              if (isEmpty(texture)) return;
-
-              const sprite = new Sprite(textureMap[char]);
-              comp.addChild(sprite);
-              return sprite;
-            }
-        )
+        map((char) => comp.addChild(new Sprite(textureMap[char])))
     )(text);
 
     setAlign(attributes.align);
@@ -108,7 +99,7 @@ function textMesh(attributes) {
     return attributes.align;
   }
 
-  function setAlign(align) {
+  function setAlign(align = 'left') {
     attributes.align = align;
 
     const {children} = comp;

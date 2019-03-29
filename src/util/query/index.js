@@ -1,6 +1,16 @@
-import {curry} from 'ramda';
+import {curry, filter} from 'ramda';
 
-const search = curry(
+export const select = curry(
+    function(predicate, target) {
+      const result = filter(predicate, target);
+
+      return (
+          (result.length === 1) ? result[0] : result
+      );
+    }
+);
+
+export const search = curry(
     function(predicate, data) {
       const result = recursion(data);
       return result.length === 1 ? result[0] : result;
@@ -21,6 +31,3 @@ const search = curry(
       }
     }
 );
-
-
-export {search};

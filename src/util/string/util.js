@@ -2,15 +2,11 @@
 
 import {map, split} from 'ramda';
 
-function safeConvertNumber(source) {
-  if (isNaN(source)) return source;
-
-  return Number(source);
-}
+import {number} from '../convert';
 
 function toPair(source: string) : number[] | string[] {
   const strPair = split(',', source);
-  return map(safeConvertNumber, strPair);
+  return map(number, strPair);
 }
 
 function removeComment(source: string) {

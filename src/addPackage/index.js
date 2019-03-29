@@ -92,24 +92,21 @@ function addPackage(app: Application, packageName: string) {
    */
   function create(resName: string): Container {
     //  Temp Global
-    global.it = {
+    global.temp = {
       getSource,
-      constructBy, selectResourcesConfig,
-      getResource, selectTexturesConfig,
+      selectResourcesConfig,
+      selectTexturesConfig,
+      getResource,
     };
 
     const id = findIdBy(resName);
-    const result = constructBy(id);
+    const result = construct(sourceMap[id]);
 
-    delete global.it;
+    delete global.temp;
 
     result.name = resName;
 
     return result;
-  }
-
-  function constructBy(key: string) {
-    return construct(sourceMap[key]);
   }
 
   function getSource(key: string) {

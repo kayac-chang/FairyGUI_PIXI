@@ -28,8 +28,6 @@ function start(app) {
   const comp = create('Main');
 
   app.stage.addChild(comp);
-
-  window.comp = comp;
 }
 
 //  Execute

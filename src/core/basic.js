@@ -1,24 +1,6 @@
-// @flow
-import {divide, multiply, pi as PI} from 'mathjs';
-import {curry} from 'ramda';
+import {Radians} from './physic';
 import {hexToDecimal, rgbToHex} from './color';
-import {bool} from './type';
-
-export function Radians(source: number): number {
-  const theta = divide(source, 180);
-  return multiply(theta, PI);
-}
-
-export function Milliseconds(source: number): number {
-  return multiply(source, 1000);
-}
-
-export const toDeltaTime = curry(
-    function(rate: number, source: number) {
-      const seconds = divide(source, rate);
-      return Milliseconds(seconds);
-    }
-);
+import {bool} from '../util';
 
 export function position(x, y) {
   return {x, y};
@@ -61,3 +43,4 @@ export function pivot(x, y) {
 export function visible(visible) {
   return {visible: bool(visible)};
 }
+
