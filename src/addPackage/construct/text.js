@@ -1,9 +1,10 @@
+// @flow
 import {Text, Container, Graphics, Texture, Rectangle, Sprite} from 'pixi.js';
 
 import {toPair} from '../../util';
 import {assign} from './assign';
 
-import {getAtlasName} from './common';
+import {getAtlasName} from './index';
 
 import {divide} from 'mathjs';
 
@@ -23,18 +24,20 @@ function placeHolder(width, height) {
   return holder;
 }
 
-const style = (
+function style(
     {fontSize, font, bold, italic, color, leading, letterSpacing, align}
-) => ({
-  align: (align) || 'left',
-  fontFamily: (font) || 'Arial',
-  fontSize: Number(fontSize),
-  fontStyle: (italic) ? 'italic' : 'normal',
-  fontWeight: (bold) ? 'bold' : 'normal',
-  fill: (color) ? [color] : ['#000000'],
-  leading: (leading) ? Number(leading) : 0,
-  letterSpacing: (letterSpacing) ? Number(letterSpacing) : 0,
-});
+) {
+  return {
+    align: (align) || 'left',
+    fontFamily: (font) || 'Arial',
+    fontSize: Number(fontSize),
+    fontStyle: (italic) ? 'italic' : 'normal',
+    fontWeight: (bold) ? 'bold' : 'normal',
+    fill: (color) ? [color] : ['#000000'],
+    leading: (leading) ? Number(leading) : 0,
+    letterSpacing: (letterSpacing) ? Number(letterSpacing) : 0,
+  };
+}
 
 const whereID = (predicate) => propSatisfies(predicate, 'id');
 
@@ -44,20 +47,20 @@ function textMesh(attributes) {
   const config = pipe(
       replace('ui://', ''),
 
-      (target) => it.selectResourcesConfig(whereID(includes(target)))
+      (target) => temp.selectResourcesConfig(whereID(includes(target)))
   )(font);
 
   const baseTexture = pipe(
-      (target) => it.selectTexturesConfig(whereID(equals(target))),
+      (target) => temp.selectTexturesConfig(whereID(equals(target))),
 
       ({id, binIndex}) => getAtlasName(id, binIndex),
 
-      (atlasName) => it.selectResourcesConfig(whereID(equals(atlasName))),
+      (atlasName) => temp.selectResourcesConfig(whereID(equals(atlasName))),
 
-      ({file}) => it.getResource(file).texture.baseTexture
+      ({file}) => temp.getResource(file).texture.baseTexture
   )(config.texture);
 
-  const fontConfig = it.getSource(
+  const fontConfig = temp.getSource(
       split('.', config.file)[0]
   );
 
@@ -163,7 +166,14 @@ function normal(attributes) {
   }
 }
 
-function text({attributes}) {
+/*
+ *  Mapping text to PIXI.text or Container
+ *
+ *  There are two kinds of Text:
+ *  1. Normal Text
+ *  2. Custom Text Like Text Mesh Pro
+ */
+function text({attributes}): Text| Container {
   if (includes('ui://', attributes.font)) {
     return textMesh(attributes);
   }

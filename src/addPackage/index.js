@@ -1,8 +1,8 @@
 // @flow
 
 import {getFairyConfigMap} from './parse/getFairyConfigMap';
-import {getTexturesConfig} from './getTexturesConfig';
-import {getResourcesConfig} from './getResourcesConfig';
+import {getTexturesConfig} from './parse/getTexturesConfig';
+import {getResourcesConfig} from './parse/getResourcesConfig';
 
 import {fnt2js} from './parse/fnt2js';
 import {xml2js} from 'xml-js';
@@ -44,22 +44,26 @@ import {Application, Container} from 'pixi.js';
  * @return { function(string): PIXI.Container }
  */
 function addPackage(app: Application, packageName: string) {
+  //  XML Source Map contains xml source code mapping by config name.
   const xmlSourceMap = pipe(
       getBinaryData,
       getFairyConfigMap
   )(packageName);
   // log(xmlSourceMap);
 
+  //  Resources Config contains all resources configs used by this package.
   const resourcesConfig = pipe(
       xml2js,
       getResourcesConfig
   )(xmlSourceMap['package.xml']);
   // log(resourcesConfig);
 
+  //  textures Config describe how to use atlas file.
   const texturesConfig =
       getTexturesConfig(xmlSourceMap['sprites.bytes']);
   // log(texturesConfig);
 
+  //  Convert other source into JavaScript object.
   const sourceMap = pipe(
       omit(['package.xml', 'sprites.bytes']),
       toPairs,

@@ -1,4 +1,5 @@
-import {toPair, Radians} from '../../util';
+import {toPair} from '../../util';
+import {radians} from '../../core/physic';
 import {forEach, isEmpty} from 'ramda';
 
 function assign(it, attributes) {
@@ -22,7 +23,7 @@ function assign(it, attributes) {
 
   //  Rotation
   if (attributes.rotation) {
-    it.rotation = Radians(attributes.rotation);
+    it.rotation = radians(attributes.rotation);
   }
 
   //  Scale
@@ -34,7 +35,7 @@ function assign(it, attributes) {
   //  Skew
   if (attributes.skew) {
     const [skewX, skewY] = toPair(attributes.skew);
-    it.skew.set(-1 * Radians(skewX), Radians(skewY));
+    it.skew.set(-1 * radians(skewX), radians(skewY));
   }
 
   //  Pivot

@@ -1,7 +1,6 @@
-
+// @flow
 import {
-  propSatisfies, includes, propEq, split,
-  map,
+  propSatisfies, includes, propEq, map,
 } from 'ramda';
 
 import {toPair} from '../../util';
@@ -13,25 +12,7 @@ import {divide} from 'mathjs';
 import {extras, Texture, Container} from 'pixi.js';
 const {AnimatedSprite} = extras;
 
-import {xml2js} from 'xml-js';
-
-
-function getAtlasName(id, binIndex) {
-  return (
-      Number(binIndex) >= 0 ?
-          `atlas${binIndex}` :
-          `atlas_${split('_', id)[0]}`);
-}
-
-function toAnimationFrame({id, binIndex, frame}) {
-  const atlasName = getAtlasName(id, binIndex);
-
-  const {file} = it.selectResourcesConfig(propEq('id', atlasName));
-
-  const {baseTexture} = it.getResource(file).texture;
-
-  return new Texture(baseTexture, frame);
-}
+import {getAtlasName} from './index';
 
 function toAnimationSpeed({attributes}) {
   const {interval} = attributes;
@@ -47,23 +28,30 @@ function getOffsetPerFrame(source) {
   return map((obj) => toPair(obj.attributes.rect))(el);
 }
 
-function getFrames({src}) {
+function frames({src}): Texture {
   const textureConfigs =
-      it.selectTexturesConfig(propSatisfies(includes(src), 'id'));
+      temp.selectTexturesConfig(propSatisfies(includes(src), 'id'));
 
   return map(toAnimationFrame)(textureConfigs);
+
+  function toAnimationFrame({id, binIndex, frame}) {
+    const atlasName = getAtlasName(id, binIndex);
+
+    const {file} = temp.selectResourcesConfig(propEq('id', atlasName));
+
+    const {baseTexture} = temp.getResource(file).texture;
+
+    return new Texture(baseTexture, frame);
+  }
 }
 
-function toJson(sourceStr) {
-  return xml2js(sourceStr).elements[0];
-}
+/*
+ *  Mapping MovieClip Type to PIXI.extra.AnimatedSprite
+ */
+function movieclip({attributes}: Object): Container {
+  const anim = new AnimatedSprite(frames(attributes));
 
-function movieclip({attributes}) {
-  const frames = getFrames(attributes);
-
-  const anim = new AnimatedSprite(frames);
-
-  const source = toJson(it.getSource(attributes.src));
+  const source = temp.getSource(attributes.src);
 
   anim.animationSpeed = toAnimationSpeed(source);
 

@@ -1,17 +1,11 @@
 // @flow
 import {
-  pipe, curry, replace, slice, map,
+  pipe, replace, slice, map,
 } from 'ramda';
 
 import {round} from 'mathjs';
 
-const toRadix = curry(
-    function toRadix(radix, source) {
-      return parseInt(source, radix);
-    }
-);
-
-const toHex = toRadix(16);
+const toHex = (source) => parseInt(source, 16);
 
 function execHex(source: string) {
   // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
@@ -33,7 +27,7 @@ type RGB = {
   b: number;
 }
 
-export function hexToRgb(source: string) : RGB {
+export function hexToRgb(source: string): RGB {
   const [r, g, b] = pipe(
       execHex,
       slice(1, 4),

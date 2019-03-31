@@ -1,6 +1,7 @@
+// @flow
 import {search} from '../../util';
 import {
-  map, propEq, isEmpty, filter,
+  map, propEq, filter,
   has, pipe, find, prop,
 } from 'ramda';
 
@@ -11,51 +12,57 @@ import {Container} from 'pixi.js';
 import {transition} from './transition';
 import {construct} from './index';
 
-function subComponent(attributes) {
+const {defineProperties} = Object;
+
+function subComponent(attributes: Object): Container {
   const source = temp.getSource(attributes.src);
 
-  const comp = construct(source);
+  const comp = topComponent(source);
 
   return assign(comp, attributes);
 }
 
-function topComponent(attributes) {
+function topComponent(attributes: Object): Container {
   const comp = new Container();
 
-  temp.getChild = (name) => comp.getChildByName(name);
-
-  const displaySource =
-      search((obj) => obj.name === 'displayList', source).elements;
-
-  if (!isEmpty(displaySource)) {
-    const displayElements = map(construct, displaySource);
-
-    comp.addChild(...displayElements);
-  }
-
-  pipe(
-      search((obj) => obj.name === 'displayList'),
+  const displayElements = pipe(
+      search(({name}) => name === 'displayList'),
       prop('elements'),
       map(construct),
   )(source);
 
+  comp.addChild(...displayElements);
+
+  temp.getChild = (name) => comp.getChildByName(name);
   const transitions = pipe(
-      search((obj) => obj.name === 'transition'),
+      search(({name}) => name === 'transition'),
       (args) => [].concat(args),
       filter(has('elements')),
       map(transition),
   )(source);
 
-  comp.getTransitions = () => transitions;
+  defineProperties(comp,
+      {
+        'transitions': {
+          get: () => transitions,
+        },
+      },
+  );
 
-  comp.getTransition =
-      (name) => find(propEq('name', name), transitions);
+  comp.getTransition = (name) =>
+    find(propEq('name', name))(transitions);
 
   return assign(comp, attributes);
-
 }
 
-export function component(source) {
+/*
+ *  Mapping FairyGUI component Type to PIXI.Container
+ *
+ *  Typically, there are two kind of component.
+ *  1. topComponent like Scene in the Game.
+ *  2. subComponent is a collection contains other elements.
+ */
+export function component(source: Object): Container {
   const {attributes} = source;
 
   if (attributes.src) return subComponent(attributes);

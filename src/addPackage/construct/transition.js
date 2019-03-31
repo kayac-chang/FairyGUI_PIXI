@@ -1,16 +1,17 @@
-import anime from 'animejs';
+// @flow
+import anime, {AnimeTimelineInstance} from 'animejs';
 import {
   split, mergeWith, has,
   test, anyPass, prop,
 } from 'ramda';
 
+import {toPair, bool} from '../../util';
+
 import {
-  toPair,
-  hexToRgb, toDeltaTime,
-  bool,
   position, size, alpha, rotation,
-  scale, skew, tint, pivot, visible,
-} from '../../util';
+  scale, skew, pivot, visible, tint,
+  hexToRgb, deltaTime,
+} from '../../core';
 
 function mapByType({type}) {
   return {
@@ -35,7 +36,7 @@ function easing(source = 'Quad.Out') {
 }
 
 function getTarget({type, target}) {
-  const element = it.getChild(name(target));
+  const element = temp.getChild(name(target));
 
   const targets = getControlTargetByType(type);
 
@@ -73,7 +74,7 @@ function getFromTo(attributes) {
 function tweenAnimation(attributes) {
   const fromTo = getFromTo(attributes);
 
-  const byFrameRate = toDeltaTime(24);
+  const byFrameRate = deltaTime(24);
 
   const {element, targets} = getTarget(attributes);
 
@@ -98,7 +99,7 @@ function keyFrame(attributes) {
 
   const result = mapping(...(toPair(attributes.value)));
 
-  const byFrameRate = toDeltaTime(24);
+  const byFrameRate = deltaTime(24);
 
   const {targets} = getTarget(attributes);
 
@@ -127,9 +128,12 @@ function getLoop(repeat) {
   return Number(repeat);
 }
 
-function transition({attributes, elements}) {
-  log({attributes, elements});
-
+/*
+ *  Map transition type to anime.AnimeTimelineInstance
+ *
+ *  See Anime.js
+ */
+function transition({attributes, elements}): AnimeTimelineInstance {
   const timeLine = elements
       .map(prop('attributes'))
       .map(process)

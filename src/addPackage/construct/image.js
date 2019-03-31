@@ -1,22 +1,22 @@
 import {assign} from './assign';
 
-import {getAtlasName} from './common';
+import {getAtlasName} from './index';
 
-import {hexToDecimal} from '../../util';
+import {hexToDecimal} from '../../core/color';
 
 import {propEq} from 'ramda';
 
 import {Sprite, mesh, Texture} from 'pixi.js';
 const {NineSlicePlane} = mesh;
 
-function toSprite({id, binIndex, frame}) {
+function sprite({id, binIndex, frame}) {
   const atlasName = getAtlasName(id, binIndex);
 
-  const {file} = it.selectResourcesConfig(propEq('id', atlasName));
+  const {file} = temp.selectResourcesConfig(propEq('id', atlasName));
 
-  const {scale9grid} = it.selectResourcesConfig(propEq('id', id));
+  const {scale9grid} = temp.selectResourcesConfig(propEq('id', id));
 
-  const {baseTexture} = it.getResource(file).texture;
+  const {baseTexture} = temp.getResource(file).texture;
 
   const texture = new Texture(baseTexture, frame);
 
@@ -39,18 +39,21 @@ function toSprite({id, binIndex, frame}) {
   return new Sprite(texture);
 }
 
-function image({attributes}) {
+/*
+ *  Mapping FairyGUI Image Type to PIXI.Sprite or PIXI.mesh.NineSlicePlane
+ */
+function image({attributes}: Object): Sprite | NineSlicePlane {
   const config =
-      it.selectTexturesConfig(propEq('id', attributes.src));
+      temp.selectTexturesConfig(propEq('id', attributes.src));
 
-  const sprite =
-      assign(toSprite(config), attributes);
+  const it =
+      assign(sprite(config), attributes);
 
   if (attributes.color) {
-    sprite.tint = hexToDecimal(attributes.color);
+    it.tint = hexToDecimal(attributes.color);
   }
 
-  return sprite;
+  return it;
 }
 
 export {image};

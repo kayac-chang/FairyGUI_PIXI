@@ -61,7 +61,10 @@ function setGraphics({func, lineSize, lineColor, fillColor, size}) {
   return it;
 }
 
-function graph({attributes}) {
+/*
+ *  Mapping graph to PIXI.Graphics
+ */
+function graph({attributes}): Graphics {
   const graphics = (
       (attributes.type) ?
           pipe(preprocess, setGraphics)(attributes) :

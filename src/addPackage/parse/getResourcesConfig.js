@@ -1,7 +1,7 @@
 // @flow
 
 import {propEq, map} from 'ramda';
-import {toPair, search} from '../util';
+import {toPair, search} from '../../util';
 
 function processForImageType(attributes) {
   return (

@@ -1,20 +1,20 @@
 // @flow
-import {divide, multiply, pi as PI} from 'mathjs';
+import {divide, multiply, pi} from 'mathjs';
 import {curry} from 'ramda';
 
-export function Radians(source: number): number {
+export function radians(source: number): number {
   const theta = divide(source, 180);
-  return multiply(theta, PI);
+  return multiply(theta, pi);
 }
 
-export function Milliseconds(source: number): number {
+export function milliseconds(source: number): number {
   return multiply(source, 1000);
 }
 
-export const toDeltaTime = curry(
+export const deltaTime = curry(
     function(rate: number, source: number) {
       const seconds = divide(source, rate);
-      return Milliseconds(seconds);
+      return milliseconds(seconds);
     }
 );
 
