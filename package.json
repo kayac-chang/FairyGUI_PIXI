@@ -11,7 +11,7 @@
     "dev-server": "webpack-dev-server --config ./tools/build.js",
     "start": "npm run clean && NODE_ENV=development npm run dev-server -- --env.mode=development --open"
   },
-  "main": "index.js",
+  "main": "src/index.js",
   "keywords": ["pixi.js", "FairyGUI"],
   "author": "Kayac",
   "license": "ISC",
