@@ -22,7 +22,7 @@ function subComponent(attributes: Object): Container {
   return assign(comp, attributes);
 }
 
-function topComponent(attributes: Object): Container {
+function topComponent(source: Object): Container {
   const comp = new Container();
 
   const displayElements = pipe(
@@ -52,7 +52,7 @@ function topComponent(attributes: Object): Container {
   comp.getTransition = (name) =>
     find(propEq('name', name))(transitions);
 
-  return assign(comp, attributes);
+  return assign(comp, source.attributes);
 }
 
 /*
@@ -67,5 +67,5 @@ export function component(source: Object): Container {
 
   if (attributes.src) return subComponent(attributes);
 
-  return topComponent(attributes);
+  return topComponent(source);
 }
