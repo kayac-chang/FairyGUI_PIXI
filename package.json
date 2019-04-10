@@ -1,5 +1,5 @@
 {
-  "name": "FairyGUI_PIXI",
+  "name": "pixi_fairygui",
   "version": "0.1.0",
   "description": "The FairyGUI to pixi.js SDK",
   "scripts": {
