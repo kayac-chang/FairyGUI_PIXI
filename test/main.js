@@ -4,7 +4,9 @@ import {addPackage} from '../src';
 global.log = console.log;
 
 function main(...args) {
-  const app = new Application();
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  const app = new Application({width, height});
   document.body.appendChild(app.view);
 
   load(app).then(start);
@@ -13,8 +15,8 @@ function main(...args) {
 function load(app) {
   app.loader.baseUrl = 'assets';
   app.loader
-      .add('Package1@atlas0.jpg')
-      .add('Package1.fui', {xhrType: 'arraybuffer'});
+    .add('Package1@atlas0.png')
+    .add('Package1.fui', {xhrType: 'arraybuffer'});
 
   return new Promise(onLoaded);
 
@@ -25,7 +27,7 @@ function load(app) {
 
 function start(app) {
   const create = addPackage(app, 'Package1');
-  const comp = create('Component1');
+  const comp = create('Scene');
 
   app.stage.addChild(comp);
 }

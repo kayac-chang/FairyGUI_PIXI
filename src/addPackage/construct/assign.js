@@ -49,7 +49,7 @@ function assign(it, attributes) {
         it.anchor.set(pivotX, pivotY);
       } else {
         forEach((it) =>
-          it.anchor && it.anchor.set(pivotX, pivotY)
+          it.anchor && it.anchor.set(pivotX, pivotY),
         )(it.children);
       }
     }

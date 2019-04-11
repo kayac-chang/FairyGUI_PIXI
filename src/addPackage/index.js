@@ -46,31 +46,31 @@ import {Application, Container} from 'pixi.js';
 function addPackage(app: Application, packageName: string) {
   //  XML Source Map contains xml source code mapping by config name.
   const xmlSourceMap = pipe(
-      getBinaryData,
-      getFairyConfigMap
+    getBinaryData,
+    getFairyConfigMap,
   )(packageName);
   // log(xmlSourceMap);
 
   //  Resources Config contains all resources configs used by this package.
   const resourcesConfig = pipe(
-      xml2js,
-      getResourcesConfig
+    xml2js,
+    getResourcesConfig,
   )(xmlSourceMap['package.xml']);
-  // log(resourcesConfig);
+  log(resourcesConfig);
 
   //  textures Config describe how to use atlas file.
   const texturesConfig =
-      getTexturesConfig(xmlSourceMap['sprites.bytes']);
-  // log(texturesConfig);
+    getTexturesConfig(xmlSourceMap['sprites.bytes']);
+  log(texturesConfig);
 
   //  Convert other source into JavaScript object.
   const sourceMap = pipe(
-      omit(['package.xml', 'sprites.bytes']),
-      toPairs,
-      map(bySourceType),
-      fromPairs
+    omit(['package.xml', 'sprites.bytes']),
+    toPairs,
+    map(bySourceType),
+    fromPairs,
   )(xmlSourceMap);
-  // log(sourceMap);
+  log(sourceMap);
 
   return create;
 
@@ -78,9 +78,9 @@ function addPackage(app: Application, packageName: string) {
     const [key, type] = split('.', sourceKey);
 
     const value = (
-        (type === 'xml') ? xml2js(sourceStr).elements[0]:
-            (type === 'fnt') ? fnt2js(sourceStr):
-                undefined
+      (type === 'xml') ? xml2js(sourceStr).elements[0] :
+        (type === 'fnt') ? fnt2js(sourceStr) :
+          undefined
     );
 
     return [key, value];
@@ -109,6 +109,7 @@ function addPackage(app: Application, packageName: string) {
     delete global.temp;
 
     result.name = resName;
+    result.scale.set(1, 1);
 
     return result;
   }
