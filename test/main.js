@@ -15,7 +15,7 @@ function main(...args) {
 function load(app) {
   app.loader.baseUrl = 'assets';
   app.loader
-    .add('main@atlas0.jpg')
+    .add('main@atlas0.png')
     .add('main.fui', {xhrType: 'arraybuffer'});
 
   return new Promise(onLoaded);

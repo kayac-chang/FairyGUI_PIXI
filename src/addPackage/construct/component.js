@@ -60,6 +60,19 @@ function topComponent(source: Object): Container {
 
   const it = assign(comp, source.attributes);
   it.scale.set(1, 1);
+
+  it.setHeight = function(value) {
+    const {y} = it.getBounds();
+
+    it.height = (y < 0) ? value - y : value;
+  };
+
+  it.setWidth = function(value) {
+    const {x} = it.getBounds();
+
+    it.width = (x < 0) ? value - x : value;
+  };
+
   return it;
 }
 
