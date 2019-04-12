@@ -109,7 +109,6 @@ function addPackage(app: Application, packageName: string) {
     delete global.temp;
 
     result.name = resName;
-    result.scale.set(1, 1);
 
     return result;
   }

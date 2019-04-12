@@ -14,7 +14,7 @@ import {transition} from './transition';
 import {construct} from './index';
 import {Button} from './button';
 
-const {defineProperties} = Object;
+const {defineProperty} = Object;
 
 function subComponent(attributes: Object): Container {
   const source = temp.getSource(attributes.src);
@@ -51,18 +51,16 @@ function topComponent(source: Object): Container {
     map(transition),
   )(source);
 
-  defineProperties(comp,
-    {
-      'transitions': {
-        get: () => transitions,
-      },
-    },
-  );
+  defineProperty(comp, 'transitions', {
+    get: () => transitions,
+  });
 
   comp.getTransition = (name) =>
     find(propEq('name', name))(transitions);
 
-  return assign(comp, source.attributes);
+  const it = assign(comp, source.attributes);
+  it.scale.set(1, 1);
+  return it;
 }
 
 /*
