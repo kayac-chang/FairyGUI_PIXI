@@ -15,7 +15,8 @@ export const Button = curry(
 
     it
       .on('pointerdown', onButtonDown)
-      .on('pointerup', onButtonUp);
+      .on('pointerup', onButtonUp)
+      .on('pointerover', onButtonOver);
 
     onButtonUp();
 
@@ -26,7 +27,8 @@ export const Button = curry(
 
       const indexes = toPair(
         find(({name}) => name === 'gearDisplay', elements)
-          .attributes.pages,
+          .attributes
+          .pages,
       );
 
       return reduce((pages, index) => {
@@ -35,16 +37,23 @@ export const Button = curry(
       }, {}, indexes);
     }
 
-    function onButtonUp() {
-      const state = 0;
-
+    function setState(state) {
       it.setChildIndex(pages[state], it.children.length - 1);
     }
 
-    function onButtonDown() {
-      const state = 1;
+    function onButtonUp() {
+      setState(0);
+      it.emit('buttonUp');
+    }
 
-      it.setChildIndex(pages[state], it.children.length - 1);
+    function onButtonDown() {
+      setState(1);
+      it.emit('buttonDown');
+    }
+
+    function onButtonOver() {
+      setState(2);
+      it.emit('buttonOver');
     }
   },
 );
