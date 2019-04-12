@@ -15,8 +15,8 @@ function main(...args) {
 function load(app) {
   app.loader.baseUrl = 'assets';
   app.loader
-    .add('Package1@atlas0.png')
-    .add('Package1.fui', {xhrType: 'arraybuffer'});
+    .add('main@atlas0.jpg')
+    .add('main.fui', {xhrType: 'arraybuffer'});
 
   return new Promise(onLoaded);
 
@@ -26,8 +26,8 @@ function load(app) {
 }
 
 function start(app) {
-  const create = addPackage(app, 'Package1');
-  const comp = create('Scene');
+  const create = addPackage(app, 'main');
+  const comp = create('mainScene');
 
   app.stage.addChild(comp);
 }
