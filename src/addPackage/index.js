@@ -56,12 +56,12 @@ function addPackage(app: Application, packageName: string) {
     xml2js,
     getResourcesConfig,
   )(xmlSourceMap['package.xml']);
-  // log(resourcesConfig);
+  log(resourcesConfig);
 
   //  textures Config describe how to use atlas file.
   const texturesConfig =
     getTexturesConfig(xmlSourceMap['sprites.bytes']);
-  // log(texturesConfig);
+  log(texturesConfig);
 
   //  Convert other source into JavaScript object.
   const sourceMap = pipe(
@@ -70,7 +70,7 @@ function addPackage(app: Application, packageName: string) {
     map(bySourceType),
     fromPairs,
   )(xmlSourceMap);
-  // log(sourceMap);
+  log(sourceMap);
 
   return create;
 

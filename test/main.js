@@ -27,7 +27,10 @@ function load(app) {
 
 function start(app) {
   const create = addPackage(app, 'main');
-  const comp = create('mainScene');
+  const comp = create('MainScene');
+
+  comp.height = app.screen.height;
+  comp.width = app.screen.width;
 
   app.stage.addChild(comp);
 }

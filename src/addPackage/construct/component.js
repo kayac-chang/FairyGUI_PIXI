@@ -8,7 +8,7 @@ import {
 
 import {assign} from './assign';
 
-import {Container} from 'pixi.js';
+import {Container, Graphics} from 'pixi.js';
 
 import {transition} from './transition';
 import {construct} from './index';
@@ -19,14 +19,14 @@ const {defineProperty} = Object;
 function subComponent(attributes: Object): Container {
   const source = temp.getSource(attributes.src);
 
-  const mapByExtention = (({extention}) => (
+  const mapByExtension = (({extention}) => (
     (extention === 'Button') ? Button(source) :
       identity
   ))(source.attributes);
 
   const comp = pipe(
     topComponent,
-    mapByExtention,
+    mapByExtension,
   )(source);
 
   return assign(comp, attributes);
@@ -73,7 +73,30 @@ function topComponent(source: Object): Container {
     it.width = (x < 0) ? value - x : value;
   };
 
+  const maskFunc = ((overflow) => (
+    (overflow === 'hidden') ? hidden :
+      identity
+  ))(source.attributes.overflow);
+
+  maskFunc(it);
+
   return it;
+
+  function hidden(it) {
+    const mask = new Graphics();
+
+    mask.beginFill(0x000);
+
+    const {x, y, _width, _height} = it;
+    mask.drawRect(x, y, _width, _height);
+
+    mask.endFill();
+
+    it.addChild(mask);
+    it.mask = mask;
+
+    return it;
+  }
 }
 
 /*
