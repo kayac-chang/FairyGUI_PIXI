@@ -44,7 +44,7 @@ export const Button = curry(
     }
 
     function onButtonUp(event) {
-      setState(0);
+      setState(2);
       it.emit('buttonUp');
     }
 
