@@ -84,12 +84,11 @@ function topComponent(source: Object): Container {
 
   function hidden(it) {
     const mask = new Graphics();
+    mask.name = '';
 
     mask.beginFill(0x000);
-
     const {x, y, _width, _height} = it;
     mask.drawRect(x, y, _width, _height);
-
     mask.endFill();
 
     it.addChild(mask);

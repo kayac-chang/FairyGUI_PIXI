@@ -4,9 +4,7 @@ import {forEach, isEmpty} from 'ramda';
 
 function assign(it, attributes) {
   //  Name
-  if (attributes.name) {
-    it.name = attributes.name;
-  }
+  it.name = (attributes.name) || '';
 
   //  Size
   if (attributes.size) {

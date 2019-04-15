@@ -6,6 +6,13 @@ export const Button = curry(
     it.interactive = true;
     it.buttonMode = true;
 
+    it
+      .on('pointerdown', onButtonDown)
+      .on('pointerover', onButtonOver)
+      .on('pointerup', onButtonUp)
+      .on('pointerout', onButtonOut)
+      .on('pointerupoutside', onButtonUpOutSide);
+
     const pages = pipe(
       search(({name}) => name === 'image'),
       (arr) => [].concat(arr),
@@ -13,12 +20,7 @@ export const Button = curry(
       mergeAll,
     )(source);
 
-    it
-      .on('pointerdown', onButtonDown)
-      .on('pointerup', onButtonUp)
-      .on('pointerover', onButtonOver);
-
-    onButtonUp();
+    setState(0);
 
     return it;
 
@@ -41,19 +43,29 @@ export const Button = curry(
       it.setChildIndex(pages[state], it.children.length - 1);
     }
 
-    function onButtonUp() {
+    function onButtonUp(event) {
       setState(0);
       it.emit('buttonUp');
     }
 
-    function onButtonDown() {
+    function onButtonDown(event) {
       setState(1);
       it.emit('buttonDown');
     }
 
-    function onButtonOver() {
+    function onButtonOver(event) {
       setState(2);
       it.emit('buttonOver');
+    }
+
+    function onButtonOut(event) {
+      setState(0);
+      it.emit('buttonOut');
+    }
+
+    function onButtonUpOutSide(event) {
+      setState(0);
+      it.emit('buttonUpOutSide');
     }
   },
 );
