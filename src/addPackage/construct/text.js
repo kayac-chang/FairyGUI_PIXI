@@ -1,18 +1,15 @@
 // @flow
-import {Text, Container, Graphics, Texture, Rectangle, Sprite} from 'pixi.js';
+import {
+  Text, Container, Graphics, extras,
+} from 'pixi.js';
+
 
 import {toPair} from '../../util';
 import {assign} from './assign';
 
-import {getAtlasName} from './index';
-
 import {divide} from 'mathjs';
 
-import {
-  includes, replace, propSatisfies, reduce,
-  split, equals, assoc, pipe, map,
-  sum, prop,
-} from 'ramda';
+import {includes} from 'ramda';
 
 function placeHolder(width, height) {
   const holder = new Graphics();
@@ -25,7 +22,7 @@ function placeHolder(width, height) {
 }
 
 function style(
-    {fontSize, font, bold, italic, color, leading, letterSpacing, align}
+  {fontSize, font, bold, italic, color, leading, letterSpacing, align},
 ) {
   return {
     align: (align) || 'left',
@@ -39,99 +36,11 @@ function style(
   };
 }
 
-const whereID = (predicate) => propSatisfies(predicate, 'id');
-
-function textMesh(attributes) {
-  const {text, font} = attributes;
-
-  const config = pipe(
-      replace('ui://', ''),
-
-      (target) => temp.selectResourcesConfig(whereID(includes(target)))
-  )(font);
-
-  const baseTexture = pipe(
-      (target) => temp.selectTexturesConfig(whereID(equals(target))),
-
-      ({id, binIndex}) => getAtlasName(id, binIndex),
-
-      (atlasName) => temp.selectResourcesConfig(whereID(equals(atlasName))),
-
-      ({file}) => temp.getResource(file).texture.baseTexture
-  )(config.texture);
-
-  const fontConfig = temp.getSource(
-      split('.', config.file)[0]
-  );
-
-  const textureMap = reduce(
-      (map, {id, x, y, width, height}) => {
-        const frame = new Rectangle(x, y, width, height);
-        const texture = new Texture(baseTexture, frame);
-
-        return assoc(id, texture, map);
-      }, {}, fontConfig.chars
-  );
-
-  const comp = assign(new Container(), attributes);
-
-  Object.defineProperty(comp, 'text', {get: getText, set: setText});
-  Object.defineProperty(comp, 'align', {get: getAlign, set: setAlign});
-
-  setText(text);
-
-  return comp;
-
-  function getText() {
-    return attributes.text;
-  }
-
-  function setText(text) {
-    attributes.text = text;
-    comp.children = [];
-
-    pipe(
-        split(''),
-        map((char) => comp.addChild(new Sprite(textureMap[char])))
-    )(text);
-
-    setAlign(attributes.align);
-  }
-
-  function getAlign() {
-    return attributes.align;
-  }
-
-  function setAlign(align = 'left') {
-    attributes.align = align;
-
-    const {children} = comp;
-
-    const totalWidth = pipe(map(prop('width')), sum)(children);
-
-    const [compWidth] = toPair(attributes.size);
-
-    const startPoint = {
-      right: compWidth - totalWidth,
-      left: 0,
-      center: divide(compWidth - totalWidth, 2),
-    }[align];
-
-    reduce(
-        function(x, sprite) {
-          sprite.x = x;
-          x += sprite.width;
-          return x;
-        }
-        , startPoint, children);
-  }
-}
-
 function normal(attributes) {
   const content = new Text(attributes.text, style(attributes));
 
   const holder =
-      placeHolder(...toPair(attributes.size));
+    placeHolder(...toPair(attributes.size));
 
   const comp = assign(new Container(), attributes);
   Object.defineProperty(comp, 'text', {get: getText, set: setText});
@@ -166,6 +75,17 @@ function normal(attributes) {
   }
 }
 
+function bitMapFont(attributes) {
+  const {text, customData} = attributes;
+
+  const style = JSON.parse(customData);
+
+  const it =
+    new extras.BitmapText(text, style);
+
+  return assign(it, attributes);
+}
+
 /*
  *  Mapping text to PIXI.text or Container
  *
@@ -173,9 +93,9 @@ function normal(attributes) {
  *  1. Normal Text
  *  2. Custom Text Like Text Mesh Pro
  */
-function text({attributes}): Text| Container {
+function text({attributes}): Text | Container {
   if (includes('ui://', attributes.font)) {
-    return textMesh(attributes);
+    return bitMapFont(attributes);
   }
 
   return normal(attributes);
