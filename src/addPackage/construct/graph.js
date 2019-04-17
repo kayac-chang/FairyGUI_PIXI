@@ -1,4 +1,4 @@
-import {Graphics} from 'pixi.js';
+import {Graphics, Container} from 'pixi.js';
 import {toPair} from '../../util';
 
 import {assign} from './assign';
@@ -71,7 +71,19 @@ function graph({attributes}): Graphics {
           new Graphics()
   );
 
-  return assign(graphics, attributes);
+  const comp = new Container();
+  comp.addChild(graphics);
+
+  if (attributes.anchor === 'true') {
+    const [x, y] = toPair(attributes.xy);
+    const [pivotX, pivotY] = toPair(attributes.pivot);
+    const newX = x - (comp.width * pivotX);
+    const newY = y - (comp.height * pivotY);
+    attributes.xy = `${newX},${newY}`;
+    attributes.pivot = undefined;
+  }
+
+  return assign(comp, attributes);
 }
 
 export {graph};

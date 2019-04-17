@@ -15,8 +15,7 @@ function main(...args) {
 function load(app) {
   app.loader.baseUrl = 'assets';
   app.loader
-    .add('myFont.xml')
-    // .add('main@atlas0.png')
+    .add('main@atlas0.png')
     .add('main.fui', {xhrType: 'arraybuffer'});
 
   return new Promise(onLoaded);
@@ -28,7 +27,7 @@ function load(app) {
 
 function start(app) {
   const create = addPackage(app, 'main');
-  const comp = create('Main');
+  const comp = create('MainScene');
 
   comp.height = app.screen.height;
   comp.width = app.screen.width;
