@@ -80,7 +80,6 @@ function graph({attributes}): Graphics {
     const newX = x - (comp.width * pivotX);
     const newY = y - (comp.height * pivotY);
     attributes.xy = `${newX},${newY}`;
-    attributes.pivot = undefined;
   }
 
   return assign(comp, attributes);
