@@ -1,6 +1,5 @@
 import {toPair} from '../../util';
 import {radians} from '../../core/physic';
-import {forEach, isEmpty} from 'ramda';
 
 function assign(it, attributes) {
   //  Name
@@ -43,13 +42,7 @@ function assign(it, attributes) {
 
     //  Anchor
     if (attributes.anchor === 'true') {
-      if (isEmpty(it.children)) {
-        it.anchor.set(pivotX, pivotY);
-      } else {
-        forEach((it) =>
-          it.anchor && it.anchor.set(pivotX, pivotY),
-        )(it.children);
-      }
+      it.anchor.set(pivotX, pivotY);
     }
   }
 

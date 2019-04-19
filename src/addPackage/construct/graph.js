@@ -74,14 +74,6 @@ function graph({attributes}): Graphics {
   const comp = new Container();
   comp.addChild(graphics);
 
-  if (attributes.anchor === 'true') {
-    const [x, y] = toPair(attributes.xy);
-    const [pivotX, pivotY] = toPair(attributes.pivot);
-    const newX = x - (comp.width * pivotX);
-    const newY = y - (comp.height * pivotY);
-    attributes.xy = `${newX},${newY}`;
-  }
-
   return assign(comp, attributes);
 }
 
