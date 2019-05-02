@@ -117,7 +117,19 @@ function topComponent(source: Object): Component {
 
   comp.addChild(...displayElements);
 
-  temp.getChild = (name) => comp.getChildByName(name);
+  temp.getChild = (_id) => {
+    const displayList = pipe(
+      search(({name}) => name === 'displayList'),
+      prop('elements'),
+    )(source);
+
+    const target = find(
+      ({attributes}) => attributes.id === _id,
+    )(displayList);
+
+    return comp.getChildByName(target.attributes.name);
+  };
+
   const transitions = pipe(
     search(({name}) => name === 'transition'),
     (args) => [].concat(args),

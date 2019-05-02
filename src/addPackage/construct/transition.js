@@ -1,7 +1,7 @@
 // @flow
 import anime, {AnimeTimelineInstance} from 'animejs';
 import {
-  split, mergeWith, has,
+  split, mergeWith,
   test, anyPass, prop,
 } from 'ramda';
 
@@ -28,37 +28,34 @@ function mapByType({type}) {
 }
 
 function easing(source = 'Quad.Out') {
-  if (anyPass([test(/Bounce+/i), test(/linear/i)])(source)) return 'linear';
+  if (anyPass([test(/Bounce+/i), test(/linear/i)])(source)) {
+    return 'linear';
+  }
 
   const [func, type] = split('.', source);
-
   return 'ease'.concat(type, func);
 }
 
 function getTarget({type, target}) {
-  const element = temp.getChild(name(target));
+  const element = temp.getChild(target);
 
   const targets = getControlTargetByType(type);
 
   return {element, targets};
 
-  function name(target) {
-    return split('_', target)[0];
-  }
-
   function getControlTargetByType(type) {
     return (
-        (type === 'Scale') ? element.scale:
-        (type === 'Skew') ? element.skew:
-        (type === 'Pivot') ? element.pivot:
-        (type === 'Color') ? {r: 0, g: 0, b: 0}:
-            element
+      (type === 'Scale') ? element.scale :
+        (type === 'Skew') ? element.skew :
+          (type === 'Pivot') ? element.pivot :
+            (type === 'Color') ? {r: 0, g: 0, b: 0} :
+              element
     );
   }
 }
 
 function shouldAnimate(attributes) {
-  return !(has('value', attributes));
+  return attributes.tween === 'true';
 }
 
 function getFromTo(attributes) {
@@ -103,12 +100,15 @@ function keyFrame(attributes) {
 
   const {targets} = getTarget(attributes);
 
+  const time =
+    byFrameRate(attributes.time) === 0 ? 0 : byFrameRate(attributes.time);
+
   return {
-    time: byFrameRate(time),
-    update,
+    time,
+    begin,
   };
 
-  function update(anim) {
+  function begin(anim) {
     anim.set(targets, result);
   }
 }
@@ -120,12 +120,24 @@ function process(attributes) {
   return keyFrame(attributes);
 }
 
-function getLoop(repeat) {
+function getLoop(repeat, elements) {
   if (!repeat) return 1;
 
   if (repeat === '-1') return true;
 
+  const flag =
+    elements.some(({attributes}) => attributes.repeat === '-1');
+
+  if (flag) return true;
+
   return Number(repeat);
+}
+
+function whenYOYO(elements) {
+  const flag =
+    elements.some(({attributes}) => attributes.yoyo === 'true');
+
+  if (flag) return 'alternate';
 }
 
 /*
@@ -135,17 +147,21 @@ function getLoop(repeat) {
  */
 function transition({attributes, elements}): AnimeTimelineInstance {
   const timeLine = elements
-      .map(prop('attributes'))
-      .map(process)
-      .reduce(addTimeFrame, anime.timeline());
+    .map(prop('attributes'))
+    .map(process)
+    .reduce(addTimeFrame, anime.timeline());
 
   timeLine.name = attributes.name;
 
-  timeLine.loop = getLoop(attributes.autoPlayRepeat);
+  timeLine.loop = getLoop(attributes.autoPlayRepeat, elements);
+
+  timeLine.direction = whenYOYO(elements);
 
   timeLine.pause();
 
-  if (isAutoPlay()) timeLine.restart();
+  if (isAutoPlay()) {
+    timeLine.restart();
+  }
 
   return timeLine;
 
