@@ -5,11 +5,12 @@ import {
 
 import {toPair} from '../../util';
 
-import {assign} from './assign';
+// import {assign} from './assign';
 
 import {divide} from 'mathjs';
 
 import {extras, Texture, Container} from 'pixi.js';
+
 const {AnimatedSprite} = extras;
 
 import {getAtlasName} from './index';
@@ -28,9 +29,16 @@ function getOffsetPerFrame(source) {
   return map((obj) => toPair(obj.attributes.rect))(el);
 }
 
-function frames({src}): Texture {
-  const textureConfigs =
-      temp.selectTexturesConfig(propSatisfies(includes(src), 'id'));
+function toFrames(src): Texture {
+  let textureConfigs =
+    temp.selectTexturesConfig(propSatisfies(includes(src), 'id'));
+
+  textureConfigs =
+    textureConfigs.map((config) => {
+      config.index = Number(config.id.split('_')[1]);
+      return config;
+    })
+      .sort((a, b) => a.index - b.index);
 
   return map(toAnimationFrame)(textureConfigs);
 
@@ -49,23 +57,29 @@ function frames({src}): Texture {
  *  Mapping MovieClip Type to PIXI.extra.AnimatedSprite
  */
 function movieclip({attributes}: Object): Container {
-  const anim = new AnimatedSprite(frames(attributes));
-
   const source = temp.getSource(attributes.src);
-
-  anim.animationSpeed = toAnimationSpeed(source);
 
   const offsets = getOffsetPerFrame(source);
 
-  anim.onFrameChange = function(frameIndex) {
-    anim.position.set(...offsets[frameIndex]);
+  const frames = toFrames(attributes.src, offsets);
+
+  const anim = new AnimatedSprite(frames);
+
+  anim.animationSpeed = toAnimationSpeed(source);
+
+  const container = new Container();
+
+  container.addChild(anim);
+
+  const [initX, initY] = offsets[0];
+  anim.position.set(initX, initY);
+
+  anim.onFrameChange = function(index) {
+    const [x, y] = offsets[index];
+    anim.position.set(x, y);
   };
 
   anim.play();
-
-  const container = assign(new Container(), attributes);
-
-  container.addChild(anim);
 
   return container;
 }
