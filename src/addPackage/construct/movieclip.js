@@ -5,13 +5,11 @@ import {
 
 import {toPair} from '../../util';
 
-// import {assign} from './assign';
+import {assign} from './assign';
 
 import {divide} from 'mathjs';
 
-import {extras, Texture, Container} from 'pixi.js';
-
-const {AnimatedSprite} = extras;
+import {AnimatedSprite, Texture, Container} from 'pixi.js';
 
 import {getAtlasName} from './index';
 
@@ -67,10 +65,6 @@ function movieclip({attributes}: Object): Container {
 
   anim.animationSpeed = toAnimationSpeed(source);
 
-  const container = new Container();
-
-  container.addChild(anim);
-
   const [initX, initY] = offsets[0];
   anim.position.set(initX, initY);
 
@@ -78,6 +72,10 @@ function movieclip({attributes}: Object): Container {
     const [x, y] = offsets[index];
     anim.position.set(x, y);
   };
+
+  const container = assign(new Container(), attributes);
+
+  container.addChild(anim);
 
   anim.play();
 

@@ -6,8 +6,7 @@ import {hexToDecimal} from '../../core/color';
 
 import {propEq} from 'ramda';
 
-import {Sprite, mesh, Texture} from 'pixi.js';
-const {NineSlicePlane} = mesh;
+import {Sprite, NineSlicePlane, Texture} from 'pixi.js';
 
 function sprite({id, binIndex, frame}) {
   const atlasName = getAtlasName(id, binIndex);

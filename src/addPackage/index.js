@@ -17,8 +17,6 @@ import {
 
 import {construct} from './construct';
 
-import {Application, Container} from 'pixi.js';
-
 /**
  *   >  Analysing Fairy Config File
  *   >  and return a factory function.
@@ -43,7 +41,7 @@ import {Application, Container} from 'pixi.js';
  * @param {string} packageName
  * @return { function(string): PIXI.Container }
  */
-function addPackage(app: Application, packageName: string) {
+function addPackage(app, packageName: string) {
   //  XML Source Map contains xml source code mapping by config name.
   const xmlSourceMap = pipe(
     getBinaryData,
@@ -94,7 +92,7 @@ function addPackage(app: Application, packageName: string) {
    * @param {string} resName
    * @return {PIXI.Container}
    */
-  function create(resName: string): Container {
+  function create(resName: string) {
     //  Temp Global
     global.temp = {
       getSource,

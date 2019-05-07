@@ -3,7 +3,6 @@ const {resolve} = require('path');
 const {ProgressPlugin, optimize} = require('webpack');
 const {ModuleConcatenationPlugin} = optimize;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CSPHtmlWebpackPlugin = require('csp-html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 //  Path
@@ -82,8 +81,6 @@ module.exports = function(...args) {
         template: resolve(baseDir, 'index.html'),
         hash: true,
       }),
-
-      new CSPHtmlWebpackPlugin(),
 
       new CopyWebpackPlugin([
         {from: assetsDir, to: resolve(productDir, 'assets')},

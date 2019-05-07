@@ -1,6 +1,6 @@
 // @flow
 import {
-  Text, Container, Graphics, extras,
+  Text, Container, Graphics, BitmapText,
 } from 'pixi.js';
 
 
@@ -80,8 +80,7 @@ function bitMapFont(attributes) {
 
   const style = JSON.parse(customData);
 
-  const it =
-    new extras.BitmapText(text, style);
+  const it = new BitmapText(text, style);
 
   return assign(it, attributes);
 }
