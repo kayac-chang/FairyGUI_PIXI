@@ -10,6 +10,7 @@ import {assign} from './assign';
 import {divide} from 'mathjs';
 
 import {extras, Texture, Container} from 'pixi.js';
+
 const {AnimatedSprite} = extras;
 
 import {getAtlasName} from './index';
@@ -78,7 +79,7 @@ function movieclip({attributes}: Object): Container {
 
   container.addChild(anim);
 
-  anim.play();
+  anim.loop = false;
 
   return container;
 }
