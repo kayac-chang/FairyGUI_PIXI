@@ -9,7 +9,8 @@ import {assign} from './assign';
 
 import {divide} from 'mathjs';
 
-import {AnimatedSprite, Texture, Container} from 'pixi.js';
+import {extras, Texture, Container} from 'pixi.js';
+const {AnimatedSprite} = extras;
 
 import {getAtlasName} from './index';
 

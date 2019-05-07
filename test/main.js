@@ -1,4 +1,4 @@
-import {Application} from '@pixi/app';
+import {Application} from 'pixi.js';
 import {addPackage} from '../src';
 
 global.log = console.log;

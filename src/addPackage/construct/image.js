@@ -6,7 +6,9 @@ import {hexToDecimal} from '../../core/color';
 
 import {propEq} from 'ramda';
 
-import {Sprite, NineSlicePlane, Texture} from 'pixi.js';
+import {Sprite, mesh, Texture} from 'pixi.js';
+
+const {NineSlicePlane} = mesh;
 
 function sprite({id, binIndex, frame}) {
   const atlasName = getAtlasName(id, binIndex);
@@ -29,9 +31,9 @@ function sprite({id, binIndex, frame}) {
     const rightWidth = width - (a + c);
 
     return new NineSlicePlane(
-        texture,
-        leftWidth, topHeight,
-        bottomHeight, rightWidth,
+      texture,
+      leftWidth, topHeight,
+      bottomHeight, rightWidth,
     );
   }
 
@@ -43,10 +45,10 @@ function sprite({id, binIndex, frame}) {
  */
 function image({attributes}: Object): Sprite | NineSlicePlane {
   const config =
-      temp.selectTexturesConfig(propEq('id', attributes.src));
+    temp.selectTexturesConfig(propEq('id', attributes.src));
 
   const it =
-      assign(sprite(config), attributes);
+    assign(sprite(config), attributes);
 
   if (attributes.color) {
     it.tint = hexToDecimal(attributes.color);
