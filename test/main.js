@@ -17,9 +17,9 @@ function load(app) {
   app.loader
     .add('main@atlas0.png')
     .add('main@atlas0_1.png')
-    // .add('main@atlas0_2.png')
-    // .add('main@atlas0_3.png')
-    // .add('main@atlas0_4.png')
+    .add('main@atlas0_2.png')
+    .add('main@atlas0_3.png')
+    .add('main@atlas0_4.png')
     .add('main.fui', {xhrType: 'arraybuffer'});
 
   return new Promise(onLoaded);
@@ -31,7 +31,7 @@ function load(app) {
 
 function start(app) {
   const create = addPackage(app, 'main');
-  const comp = create('Symbol_Taiko_Bonus');
+  const comp = create('SlotMachine');
 
   app.stage.addChild(comp);
 }

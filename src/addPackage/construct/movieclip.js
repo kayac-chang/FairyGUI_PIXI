@@ -63,25 +63,25 @@ function movieclip({attributes}: Object): Container {
 
   const frames = toFrames(attributes.src, offsets);
 
-  const anim = new AnimatedSprite(frames);
+  const anim = assign(new AnimatedSprite(frames), attributes);
 
   anim.animationSpeed = toAnimationSpeed(source);
 
-  const [initX, initY] = offsets[0];
-  anim.position.set(initX, initY);
+  const {x, y} = anim.position;
+  let [offsetX, offsetY] = offsets[0];
+  anim.position.x = x + (offsetX * anim.scale.x);
+  anim.position.y = y + (offsetY * anim.scale.y);
 
   anim.onFrameChange = function(index) {
-    const [x, y] = offsets[index];
-    anim.position.set(x, y);
+    [offsetX, offsetY] = offsets[index];
+
+    anim.position.x = x + (offsetX * anim.scale.x);
+    anim.position.y = y + (offsetY * anim.scale.y);
   };
 
-  const container = assign(new Container(), attributes);
+  anim.play();
 
-  container.addChild(anim);
-
-  anim.loop = false;
-
-  return container;
+  return anim;
 }
 
 export {movieclip};
