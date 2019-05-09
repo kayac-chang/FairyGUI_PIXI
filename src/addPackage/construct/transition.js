@@ -157,8 +157,6 @@ function transition({attributes, elements}): AnimeTimelineInstance {
 
   timeLine.direction = whenYOYO(elements);
 
-  timeLine.pause();
-
   if (isAutoPlay()) {
     timeLine.restart();
   }

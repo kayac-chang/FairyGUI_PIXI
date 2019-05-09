@@ -1,5 +1,5 @@
 // @flow
-import {search} from '../../util';
+import {search, toPair} from '../../util';
 import {
   map, propEq, filter,
   has, pipe, find, prop,
@@ -148,18 +148,21 @@ function topComponent(source: Object): Component {
   it.scale.set(1, 1);
 
   if (source.attributes.overflow === 'hidden') {
-    hidden(it);
+    hidden(source.attributes);
   }
 
   return it;
 
-  function hidden(it) {
+  function hidden(attributes) {
     const mask = new Graphics();
     mask.name = 'mask';
 
     mask.beginFill(0x000);
-    const {x, y, _width, _height} = it;
-    mask.drawRect(x, y, _width, _height);
+
+    const [width, height] = toPair(attributes.size);
+    const [x, y] = toPair(attributes.xy || '0,0');
+
+    mask.drawRect(x, y, width, height);
     mask.endFill();
 
     it.addChild(mask);

@@ -1,26 +1,18 @@
 // @flow
 import {
-  Text, Container, Graphics, extras,
+  Text, Container, extras,
 } from 'pixi.js';
 
 const {BitmapText} = extras;
 
 import {toPair} from '../../util';
 import {assign} from './assign';
+import {placeHolder} from './index';
 
 import {divide} from 'mathjs';
 
 import {includes} from 'ramda';
 
-function placeHolder(width, height) {
-  const holder = new Graphics();
-
-  holder.beginFill(0xffffff, 0);
-  holder.drawRect(0, 0, width, height);
-  holder.endFill();
-
-  return holder;
-}
 
 function style(
   {fontSize, font, bold, italic, color, leading, letterSpacing, align},

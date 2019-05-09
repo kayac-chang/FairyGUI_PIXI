@@ -6,6 +6,7 @@ import {graph} from './graph';
 import {text} from './text';
 
 import {split} from 'ramda';
+import {Graphics} from 'pixi.js';
 
 /*
  *  source.name is resource type
@@ -30,4 +31,14 @@ export function getAtlasName(id, binIndex) {
       `atlas${binIndex}` :
       `atlas_${split('_', id)[0]}`
   );
+}
+
+export function placeHolder(width, height) {
+  const holder = new Graphics();
+
+  holder.beginFill(0xffffff, 0);
+  holder.drawRect(0, 0, width, height);
+  holder.endFill();
+
+  return holder;
 }

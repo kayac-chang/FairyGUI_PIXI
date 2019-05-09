@@ -9,6 +9,8 @@ import {assign} from './assign';
 
 import {divide} from 'mathjs';
 
+import {placeHolder} from './index';
+
 import {extras, Texture, Container} from 'pixi.js';
 
 const {AnimatedSprite} = extras;
@@ -63,25 +65,35 @@ function movieclip({attributes}: Object): Container {
 
   const frames = toFrames(attributes.src, offsets);
 
-  const anim = assign(new AnimatedSprite(frames), attributes);
+  const anim = new AnimatedSprite(frames);
+
+  const it = assign(new Container(), attributes);
+
+  const maxFrame = frames.reduce((a, b) => {
+    const rectA = a.width * a.height;
+    const rectB = b.width * b.height;
+    return rectA > rectB ? a : b;
+  });
+
+  const placeholder = placeHolder(maxFrame.width, maxFrame.height);
+
+  it.addChild(placeholder, anim);
 
   anim.animationSpeed = toAnimationSpeed(source);
 
-  const {x, y} = anim.position;
-  let [offsetX, offsetY] = offsets[0];
-  anim.position.x = x + (offsetX * anim.scale.x);
-  anim.position.y = y + (offsetY * anim.scale.y);
-
   anim.onFrameChange = function(index) {
-    [offsetX, offsetY] = offsets[index];
+    const [offsetX, offsetY] = offsets[index];
 
-    anim.position.x = x + (offsetX * anim.scale.x);
-    anim.position.y = y + (offsetY * anim.scale.y);
+    anim.position.x = offsetX;
+    anim.position.y = offsetY;
   };
+  anim.gotoAndStop(frames.indexOf(maxFrame));
+  anim.gotoAndStop(0);
+  it.anim = anim;
 
   anim.play();
 
-  return anim;
+  return it;
 }
 
 export {movieclip};
