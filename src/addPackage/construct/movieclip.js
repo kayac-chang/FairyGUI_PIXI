@@ -87,7 +87,7 @@ function movieclip({attributes}: Object): Container {
     anim.position.x = offsetX;
     anim.position.y = offsetY;
 
-    it.emit('frameChange');
+    it.emit('frameChange', index);
   };
 
   anim.gotoAndStop(frames.indexOf(maxFrame));
