@@ -5,17 +5,17 @@ function assign(it, attributes) {
   //  Name
   it.name = (attributes.name) || '';
 
-  //  Scale
-  if (attributes.scale) {
-    const [scaleX, scaleY] = toPair(attributes.scale);
-    it.scale.set(scaleX, scaleY);
-  }
-
   //  Size
   if (attributes.size) {
     const [width, height] = toPair(attributes.size);
     it.width = width;
     it.height = height;
+  }
+
+  //  Scale
+  if (attributes.scale) {
+    const [scaleX, scaleY] = toPair(attributes.scale);
+    it.scale.set(scaleX, scaleY);
   }
 
   //  Position
