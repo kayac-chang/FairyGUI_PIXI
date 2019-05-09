@@ -5,6 +5,12 @@ function assign(it, attributes) {
   //  Name
   it.name = (attributes.name) || '';
 
+  //  Scale
+  if (attributes.scale) {
+    const [scaleX, scaleY] = toPair(attributes.scale);
+    it.scale.set(scaleX, scaleY);
+  }
+
   //  Size
   if (attributes.size) {
     const [width, height] = toPair(attributes.size);
@@ -21,12 +27,6 @@ function assign(it, attributes) {
   //  Rotation
   if (attributes.rotation) {
     it.rotation = radians(attributes.rotation);
-  }
-
-  //  Scale
-  if (attributes.scale) {
-    const [scaleX, scaleY] = toPair(attributes.scale);
-    it.scale.set(scaleX, scaleY);
   }
 
   //  Skew
