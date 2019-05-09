@@ -86,9 +86,17 @@ function movieclip({attributes}: Object): Container {
 
     anim.position.x = offsetX;
     anim.position.y = offsetY;
+
+    it.emit('onFrameChange');
   };
+
   anim.gotoAndStop(frames.indexOf(maxFrame));
   anim.gotoAndStop(0);
+
+  it.gotoAndStop = (...args) => anim.gotoAndStop(...args);
+  it.gotoAndPlay = (...args) => anim.gotoAndPlay(...args);
+  it.play = () => anim.play();
+
   it.anim = anim;
 
   anim.play();
