@@ -1,4 +1,4 @@
-import {Graphics, Container} from 'pixi.js';
+import {Graphics} from 'pixi.js';
 import {toPair} from '../../util';
 
 import {assign} from './assign';
@@ -66,15 +66,12 @@ function setGraphics({func, lineSize, lineColor, fillColor, size}) {
  */
 function graph({attributes}): Graphics {
   const graphics = (
-      (attributes.type) ?
-          pipe(preprocess, setGraphics)(attributes) :
-          new Graphics()
+    (attributes.type) ?
+      pipe(preprocess, setGraphics)(attributes) :
+      new Graphics()
   );
 
-  const comp = new Container();
-  comp.addChild(graphics);
-
-  return assign(comp, attributes);
+  return assign(graphics, attributes);
 }
 
 export {graph};

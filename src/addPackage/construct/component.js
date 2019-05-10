@@ -147,6 +147,35 @@ function topComponent(source: Object): Component {
   const it = assign(comp, source.attributes);
   it.scale.set(1, 1);
 
+  if (source.attributes.mask) {
+    const mask = temp.getChild(source.attributes.mask);
+    if (source.attributes.reversedMask === 'true') {
+      const holeX = Math.max(0, mask.x);
+      const holeY = Math.max(0, mask.y);
+      const holeW = mask.x >= 0 ? mask.width : mask.width + mask.x;
+      const holeH = mask.y >= 0 ? mask.height : mask.height + mask.y;
+
+      const thing = new Graphics()
+        .lineStyle(0)
+        .beginFill(0xFFFF0B, 0.5)
+        .moveTo(0, 0)
+        .lineTo(it.width, 0)
+        .lineTo(it.width, it.height)
+        .lineTo(0, it.height)
+        .lineTo(0, 0)
+        .moveTo(holeX, holeY)
+        .lineTo(holeX + holeW, holeY)
+        .lineTo(holeX + holeW, holeY + holeH)
+        .lineTo(holeX, holeY + holeH)
+        .lineTo(holeX, holeY)
+        .addHole();
+
+      it.mask = thing;
+    } else {
+      it.mask = mask;
+    }
+  }
+
   if (source.attributes.overflow === 'hidden') {
     hidden(source.attributes);
   }
