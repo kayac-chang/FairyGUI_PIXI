@@ -159,16 +159,16 @@ function topComponent(source: Object): Component {
       it.mask = reversedMask;
 
       it.updateMask = function({x, y, width, height}) {
-        if (width) {
+        if (width !== undefined) {
           mask.x -= (width - mask.width);
           mask.width = width;
         }
-        if (height) {
+        if (height !== undefined) {
           mask.y -= (height - mask.height);
           mask.height = height;
         }
-        if (x) mask.x = x;
-        if (y) mask.y = y;
+        if (x !== undefined) mask.x = x;
+        if (y !== undefined) mask.y = y;
 
         drawReversedMask(comp, mask, reversedMask);
       };
@@ -176,10 +176,10 @@ function topComponent(source: Object): Component {
       it.mask = mask;
 
       it.updateMask = function({x, y, width, height}) {
-        if (x) mask.x = x;
-        if (y) mask.y = y;
-        if (width) mask.width = width;
-        if (height) mask.height = height;
+        if (x !== undefined) mask.x = x;
+        if (y !== undefined) mask.y = y;
+        if (width !== undefined) mask.width = width;
+        if (height !== undefined) mask.height = height;
       };
     }
   }
@@ -212,8 +212,14 @@ function topComponent(source: Object): Component {
 function drawReversedMask(comp, mask, it) {
   const holeX = Math.max(0, mask.x);
   const holeY = Math.max(0, mask.y);
-  const holeW = mask.x >= 0 ? mask.width : mask.width + mask.x;
-  const holeH = mask.y >= 0 ? mask.height : mask.height + mask.y;
+  const holeW = Math.min(
+    comp.width,
+    mask.x >= 0 ? mask.width : mask.width + mask.x,
+  );
+  const holeH = Math.min(
+    comp.height,
+    mask.y >= 0 ? mask.height : mask.height + mask.y,
+  );
 
   it.clear();
 
@@ -224,12 +230,10 @@ function drawReversedMask(comp, mask, it) {
     .lineTo(comp.width, 0)
     .lineTo(comp.width, comp.height)
     .lineTo(0, comp.height)
-    .lineTo(0, 0)
     .moveTo(holeX, holeY)
     .lineTo(holeX + holeW, holeY)
     .lineTo(holeX + holeW, holeY + holeH)
     .lineTo(holeX, holeY + holeH)
-    .lineTo(holeX, holeY)
     .addHole();
 }
 
