@@ -14,7 +14,7 @@ import {transition} from './transition';
 import {construct} from './index';
 import {Button} from './button';
 
-const {defineProperty} = Object;
+const {defineProperty, defineProperties} = Object;
 
 function Component() {
   const it = new Container();
@@ -43,7 +43,7 @@ function Component() {
     },
   };
 
-  Object.defineProperties(it, {
+  defineProperties(it, {
     height: {
       get() {
         return it.scale.y * it.getLocalBounds().height;
@@ -149,30 +149,38 @@ function topComponent(source: Object): Component {
 
   if (source.attributes.mask) {
     const mask = temp.getChild(source.attributes.mask);
+    const comp = JSON.parse(JSON.stringify(it.getLocalBounds()));
+
     if (source.attributes.reversedMask === 'true') {
-      const holeX = Math.max(0, mask.x);
-      const holeY = Math.max(0, mask.y);
-      const holeW = mask.x >= 0 ? mask.width : mask.width + mask.x;
-      const holeH = mask.y >= 0 ? mask.height : mask.height + mask.y;
+      const reversedMask = new Graphics();
+      drawReversedMask(comp, mask, reversedMask);
 
-      const thing = new Graphics()
-        .lineStyle(0)
-        .beginFill(0xFFFF0B, 0.5)
-        .moveTo(0, 0)
-        .lineTo(it.width, 0)
-        .lineTo(it.width, it.height)
-        .lineTo(0, it.height)
-        .lineTo(0, 0)
-        .moveTo(holeX, holeY)
-        .lineTo(holeX + holeW, holeY)
-        .lineTo(holeX + holeW, holeY + holeH)
-        .lineTo(holeX, holeY + holeH)
-        .lineTo(holeX, holeY)
-        .addHole();
+      it.addChild(reversedMask);
+      it.mask = reversedMask;
 
-      it.mask = thing;
+      it.updateMask = function({x, y, width, height}) {
+        if (width) {
+          mask.x -= (width - mask.width);
+          mask.width = width;
+        }
+        if (height) {
+          mask.y -= (height - mask.height);
+          mask.height = height;
+        }
+        if (x) mask.x = x;
+        if (y) mask.y = y;
+
+        drawReversedMask(comp, mask, reversedMask);
+      };
     } else {
       it.mask = mask;
+
+      it.updateMask = function({x, y, width, height}) {
+        if (x) mask.x = x;
+        if (y) mask.y = y;
+        if (width) mask.width = width;
+        if (height) mask.height = height;
+      };
     }
   }
 
@@ -199,6 +207,30 @@ function topComponent(source: Object): Component {
 
     return it;
   }
+}
+
+function drawReversedMask(comp, mask, it) {
+  const holeX = Math.max(0, mask.x);
+  const holeY = Math.max(0, mask.y);
+  const holeW = mask.x >= 0 ? mask.width : mask.width + mask.x;
+  const holeH = mask.y >= 0 ? mask.height : mask.height + mask.y;
+
+  it.clear();
+
+  return it
+    .lineStyle(0)
+    .beginFill(0xFFFF0B, 0.5)
+    .moveTo(0, 0)
+    .lineTo(comp.width, 0)
+    .lineTo(comp.width, comp.height)
+    .lineTo(0, comp.height)
+    .lineTo(0, 0)
+    .moveTo(holeX, holeY)
+    .lineTo(holeX + holeW, holeY)
+    .lineTo(holeX + holeW, holeY + holeH)
+    .lineTo(holeX, holeY + holeH)
+    .lineTo(holeX, holeY)
+    .addHole();
 }
 
 /*
