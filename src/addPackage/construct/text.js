@@ -83,10 +83,10 @@ function bitMapFont(attributes) {
  *
  *  There are two kinds of Text:
  *  1. Normal Text
- *  2. Custom Text Like Text Mesh Pro
+ *  2. Custom Text Like BM_Font
  */
 function text({attributes}): Text | Container {
-  if (includes('ui://', attributes.font)) {
+  if (attributes.font && includes('ui://', attributes.font)) {
     return bitMapFont(attributes);
   }
 

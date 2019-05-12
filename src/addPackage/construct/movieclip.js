@@ -81,21 +81,20 @@ function movieclip({attributes}: Object): Container {
 
   anim.animationSpeed = toAnimationSpeed(source);
 
-  anim.onFrameChange = function(index) {
-    const [offsetX, offsetY] = offsets[index];
+  anim.onFrameChange = function(currentFrame) {
+    const [offsetX, offsetY] = offsets[currentFrame];
 
     anim.position.x = offsetX;
     anim.position.y = offsetY;
 
-    it.emit('frameChange', index);
+    anim.emit('change', currentFrame);
+
+    if (currentFrame === frames.length -1) {
+      anim.emit('complete');
+    }
   };
 
   anim.gotoAndStop(frames.indexOf(maxFrame));
-  anim.gotoAndStop(0);
-
-  it.gotoAndStop = (...args) => anim.gotoAndStop(...args);
-  it.gotoAndPlay = (...args) => anim.gotoAndPlay(...args);
-  it.play = () => anim.play();
 
   it.anim = anim;
 
