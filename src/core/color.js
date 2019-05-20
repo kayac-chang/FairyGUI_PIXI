@@ -41,7 +41,7 @@ export function rgbToHex(r: number, g: number, b: number): string {
   return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }
 
-export function hexToDecimal(str: string): number {
+export function string2hex(str: string): number {
   return pipe(
       replace('#', '0x'), Number
   )(str);

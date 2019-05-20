@@ -1,6 +1,6 @@
 // @flow
 import {
-  Text, Container, extras,
+  Text, extras,
 } from 'pixi.js';
 
 const {BitmapText} = extras;
@@ -12,7 +12,7 @@ import {placeHolder} from './index';
 import {divide} from 'mathjs';
 
 import {includes} from 'ramda';
-
+import {Component} from '../override/Component';
 
 function style(
   {fontSize, font, bold, italic, color, leading, letterSpacing, align},
@@ -35,13 +35,15 @@ function normal(attributes) {
   const holder =
     placeHolder(...toPair(attributes.size));
 
-  const comp = assign(new Container(), attributes);
+  const comp = assign(Component(), attributes);
   Object.defineProperty(comp, 'text', {get: getText, set: setText});
   Object.defineProperty(comp, 'align', {get: getAlign, set: setAlign});
 
   setAlign(attributes.align);
 
   comp.addChild(holder, content);
+
+  comp.content = content;
 
   return comp;
 
@@ -85,7 +87,7 @@ function bitMapFont(attributes) {
  *  1. Normal Text
  *  2. Custom Text Like BM_Font
  */
-function text({attributes}): Text | Container {
+function text({attributes}) {
   if (attributes.font && includes('ui://', attributes.font)) {
     return bitMapFont(attributes);
   }

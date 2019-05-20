@@ -57,7 +57,7 @@ function assign(it, attributes) {
   }
 
   //  Interactive
-  it.interactive = attributes.touchable !== 'false';
+  it.interactive = false;
 
   return it;
 }

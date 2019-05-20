@@ -1,12 +1,32 @@
 import {Graphics} from 'pixi.js';
 import {toPair} from '../../util';
+import {string2hex} from '../../core';
 
 import {assign} from './assign';
 
-import {pipe, replace} from 'ramda';
+import {pipe} from 'ramda';
 
-function colorHex(str = '#ffffffff'): Number {
-  return pipe(replace('#ff', '0x'), Number)(str);
+function preprocess(attributes) {
+  const lineSize = attributes.lineSize ? Number(attributes.lineSize) : 1;
+
+  const lineColor = string2hex(attributes.lineColor || '#ff000000');
+
+  const fillColor = string2hex(attributes.fillColor || '#ffffffff');
+
+  const func = mapFuncBy(attributes);
+
+  const size = mapSizeBy(func, attributes);
+
+  return {func, lineSize, lineColor, fillColor, size};
+}
+
+function mapFuncBy({type, corner}) {
+  if (type === 'eclipse') return 'drawEllipse';
+
+  if (type === 'rect') {
+    if (corner) return 'drawRoundedRect';
+    return 'drawRect';
+  }
 }
 
 function rectangle(size) {
@@ -27,24 +47,16 @@ function ellipse(size) {
   return [x, y, width, height];
 }
 
-function preprocess(attributes) {
-  const lineSize = attributes.lineSize ? Number(attributes.lineSize) : 1;
+function mapSizeBy(func, {size, corner}) {
+  if (func === 'drawEllipse') return ellipse(size);
 
-  const lineColor = colorHex(attributes.lineColor || '#ff000000');
-
-  const fillColor = colorHex(attributes.fillColor || '#ffffffff');
-
-  const size = {
-    rect: rectangle,
-    eclipse: ellipse,
-  }[attributes.type](attributes.size);
-
-  const func = {
-    rect: 'drawRect',
-    eclipse: 'drawEllipse',
-  }[attributes.type];
-
-  return {func, lineSize, lineColor, fillColor, size};
+  if (func === 'drawRect') return rectangle(size);
+  if (func === 'drawRoundedRect') {
+    return [
+      ...rectangle(size),
+      Number(corner),
+    ];
+  }
 }
 
 function setGraphics({func, lineSize, lineColor, fillColor, size}) {

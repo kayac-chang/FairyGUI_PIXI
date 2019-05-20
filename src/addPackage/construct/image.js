@@ -2,7 +2,7 @@ import {assign} from './assign';
 
 import {getAtlasName} from './index';
 
-import {hexToDecimal} from '../../core/color';
+import {string2hex} from '../../core/color';
 
 import {propEq} from 'ramda';
 
@@ -43,7 +43,8 @@ function sprite({id, binIndex, frame}) {
 /*
  *  Mapping FairyGUI Image Type to PIXI.Sprite or PIXI.mesh.NineSlicePlane
  */
-function image({attributes}: Object): Sprite | NineSlicePlane {
+function image(obj: Object): Sprite | NineSlicePlane {
+  const attributes = obj.attributes;
   const config =
     temp.selectTexturesConfig(propEq('id', attributes.src));
 
@@ -51,7 +52,7 @@ function image({attributes}: Object): Sprite | NineSlicePlane {
     assign(sprite(config), attributes);
 
   if (attributes.color) {
-    it.tint = hexToDecimal(attributes.color);
+    it.tint = string2hex(attributes.color);
   }
 
   return it;

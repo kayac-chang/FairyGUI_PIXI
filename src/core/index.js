@@ -1,5 +1,5 @@
 import {radians} from './physic';
-import {hexToDecimal, rgbToHex} from './color';
+import {string2hex, rgbToHex} from './color';
 import {bool} from '../util';
 
 export function position(x, y) {
@@ -31,7 +31,7 @@ export function skew(x, y) {
 }
 
 export function tint({r, g, b}) {
-  return hexToDecimal(
+  return string2hex(
       rgbToHex(r, g, b)
   );
 }

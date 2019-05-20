@@ -4,8 +4,8 @@ import {map, split} from 'ramda';
 
 import {number} from '../convert';
 
-function toPair(source: string) : number[] | string[] {
-  const strPair = split(',', source);
+function toPair(source: string): number[] | string[] {
+  const strPair = split(/,/g, source);
   return map(number, strPair);
 }
 
