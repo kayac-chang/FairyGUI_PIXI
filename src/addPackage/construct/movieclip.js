@@ -67,8 +67,6 @@ function movieclip({attributes}: Object): Container {
 
   const anim = new AnimatedSprite(frames);
 
-  const it = assign(new Container(), attributes);
-
   const maxFrame = frames.reduce((a, b) => {
     const rectA = a.width * a.height;
     const rectB = b.width * b.height;
@@ -77,6 +75,7 @@ function movieclip({attributes}: Object): Container {
 
   const placeholder = placeHolder(maxFrame.width, maxFrame.height);
 
+  const it = new Container();
   it.addChild(placeholder, anim);
 
   anim.animationSpeed = toAnimationSpeed(source);
@@ -89,7 +88,7 @@ function movieclip({attributes}: Object): Container {
 
     anim.emit('change', currentFrame);
 
-    if (currentFrame === frames.length -1) {
+    if (currentFrame === frames.length - 1) {
       anim.emit('complete');
     }
   };
@@ -100,7 +99,7 @@ function movieclip({attributes}: Object): Container {
 
   anim.play();
 
-  return it;
+  return assign(it, attributes);
 }
 
 export {movieclip};

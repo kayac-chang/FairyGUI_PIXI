@@ -15,10 +15,10 @@ function main(...args) {
 function load(app) {
   app.loader.baseUrl = 'assets';
   app.loader
-    .add('load@atlas0.png')
-    .add('load@atlas0_1.png')
-    .add('load@atlas0_2.png')
-    .add('load.fui', {xhrType: 'arraybuffer'});
+    .add('main@atlas0.png')
+    .add('main@atlas0_1.png')
+    .add('main@atlas0_2.png')
+    .add('main.fui', {xhrType: 'arraybuffer'});
 
   return new Promise(onLoaded);
 
@@ -28,8 +28,8 @@ function load(app) {
 }
 
 function start(app) {
-  const create = addPackage(app, 'load');
-  const comp = create('LoadScene');
+  const create = addPackage(app, 'main');
+  const comp = create('Effect');
 
   app.stage.addChild(comp);
 }
