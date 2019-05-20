@@ -6,8 +6,10 @@ import {string2hex} from '../../core/color';
 
 import {propEq} from 'ramda';
 
-import {Sprite, mesh, Texture} from 'pixi.js';
+import {Sprite, mesh, Texture, filters} from 'pixi.js';
+import {toPair} from '../../util/string';
 
+const {ColorMatrixFilter} = filters;
 const {NineSlicePlane} = mesh;
 
 function sprite({id, binIndex, frame}) {
@@ -53,6 +55,20 @@ function image(obj: Object): Sprite | NineSlicePlane {
 
   if (attributes.color) {
     it.tint = string2hex(attributes.color);
+  }
+  if (attributes.filter === 'color') {
+    const [
+      brightness, contrast, saturate, hue,
+    ] = toPair(attributes.filterData);
+
+    const filter = new ColorMatrixFilter();
+
+    brightness && filter.brightness(brightness);
+    contrast && filter.contrast(contrast);
+    saturate && filter.saturate(saturate);
+    hue && filter.hue(hue);
+
+    it.filters = [filter];
   }
 
   return it;
