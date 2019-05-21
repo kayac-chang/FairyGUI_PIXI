@@ -1,10 +1,12 @@
 import {Graphics} from 'pixi.js';
+
 import {toPair} from '../../util';
 import {string2hex} from '../../core';
 
 import {assign} from './assign';
 
 import {pipe} from 'ramda';
+import {Anchorable} from '../override/Anchor';
 
 function preprocess(attributes) {
   const lineSize = attributes.lineSize ? Number(attributes.lineSize) : 1;
@@ -82,6 +84,8 @@ function graph({attributes}): Graphics {
       pipe(preprocess, setGraphics)(attributes) :
       new Graphics()
   );
+
+  Anchorable(graphics);
 
   return assign(graphics, attributes);
 }
