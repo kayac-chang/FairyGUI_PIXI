@@ -67,6 +67,7 @@ function normal(attributes) {
 
   function setText(text) {
     content.text = text;
+    setAlign(getAlign());
   }
 }
 
