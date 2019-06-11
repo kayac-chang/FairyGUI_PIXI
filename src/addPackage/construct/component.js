@@ -132,6 +132,13 @@ function topComponent(source: Object): Component {
     it.addChild(mask);
     it.mask = mask;
 
+    it._addChild = it.addChild;
+
+    it.addChild = function(...args) {
+      it._addChild(...args);
+      it.setChildIndex(mask, it.children.length - 1);
+    };
+
     return it;
   }
 }

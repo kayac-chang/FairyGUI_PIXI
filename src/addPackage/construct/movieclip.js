@@ -17,6 +17,8 @@ const {AnimatedSprite} = extras;
 
 import {getAtlasName} from './index';
 
+import {Component} from '../override/Component';
+
 function toAnimationSpeed({attributes}) {
   const {interval} = attributes;
 
@@ -75,7 +77,7 @@ function movieclip({attributes}: Object): Container {
 
   const placeholder = placeHolder(maxFrame.width, maxFrame.height);
 
-  const it = new Container();
+  const it = Component();
   it.addChild(placeholder, anim);
 
   anim.animationSpeed = toAnimationSpeed(source);
@@ -83,8 +85,8 @@ function movieclip({attributes}: Object): Container {
   anim.onFrameChange = function(currentFrame) {
     const [offsetX, offsetY] = offsets[currentFrame];
 
-    anim.position.x = offsetX;
-    anim.position.y = offsetY;
+    anim.position.x = offsetX * anim.scale.x;
+    anim.position.y = offsetY * anim.scale.y;
 
     anim.emit('change', currentFrame);
 
