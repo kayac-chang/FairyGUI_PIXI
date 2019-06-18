@@ -45,7 +45,7 @@ function sprite({id, binIndex, frame}) {
 /*
  *  Mapping FairyGUI Image Type to PIXI.Sprite or PIXI.mesh.NineSlicePlane
  */
-function image(obj: Object): Sprite | NineSlicePlane {
+function image(obj) {
   const attributes = obj.attributes;
   const config =
     temp.selectTexturesConfig(propEq('id', attributes.src));

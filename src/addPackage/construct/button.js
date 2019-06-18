@@ -2,7 +2,7 @@ import {pipe, map, curry, reduce, find, mergeAll} from 'ramda';
 import {toPair, search} from '../../util';
 
 export const Button = curry(
-  function(source: Object, it) {
+  function(source, it) {
     it.interactive = true;
     it.buttonMode = true;
 
