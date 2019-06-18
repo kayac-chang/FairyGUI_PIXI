@@ -13,12 +13,6 @@
  * current(): number
  *   Return the current position.
  */
-interface Cursor {
-  find(search: string): number;
-  takeTo(targetPosition: number): string;
-  moveTo(targetPosition: number): number;
-  current(): number;
-}
 
 /*
  * Function used to traverse source string for complex string multiplication.
@@ -36,21 +30,21 @@ interface Cursor {
  * current(): number
  *   Return the current position.
  */
-export function cursor(source: string, position = 0): Cursor {
-  function find(search: string) : number {
+export function cursor(source, position = 0) {
+  function find(search) {
     return source.indexOf(search, position);
   }
 
-  function takeTo(targetPosition: number) : string {
+  function takeTo(targetPosition) {
     return source.substring(current(), targetPosition);
   }
 
-  function moveTo(targetPosition: number) : number {
+  function moveTo(targetPosition) {
     position = targetPosition;
     return position;
   }
 
-  function current() : number {
+  function current() {
     return position;
   }
 

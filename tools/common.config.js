@@ -21,24 +21,39 @@ const {
 module.exports = function(...args) {
   return {
     //  Entry   ===========================================
-    entry: resolve(testDir, 'main.js'),
+    entry: resolve(sourceDir, 'index.js'),
 
     //  Output  ===========================================
     output: {
       path: productDir,
-      filename: 'bundle.js',
+      filename: 'fairyGUI_PIXI.js',
       publicPath: publicPath,
+      library: 'fairyGUI_PIXI',
     },
 
     //  Optimization    ====================================
     optimization: {
       usedExports: true,
+      sideEffects: false,
       concatenateModules: true,
 
       splitChunks: {
         chunks: 'all',
-        minSize: 30000,
-        minChunks: 1,
+        minSize: 0,
+        maxInitialRequests: Infinity,
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name(module) {
+              const packageName =
+                module.context.match(
+                  /[\\/]node_modules[\\/](.*?)([\\/]|$)/,
+                )[1];
+
+              return `${packageName.replace('@', '')}`;
+            },
+          },
+        },
       },
     },
 

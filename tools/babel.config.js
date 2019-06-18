@@ -7,11 +7,14 @@ module.exports = function(api) {
 
   //  Presets =====================================
   const env = [
-    '@babel/preset-env',
+    '@babel/env',
     {
-      targets: '> 0.25%, not dead',
-      modules: false,
-      loose: true,
+      targets: {
+        edge: '17',
+        firefox: '60',
+        chrome: '67',
+        safari: '11.1',
+      },
       useBuiltIns: 'usage',
     },
   ];
@@ -19,9 +22,10 @@ module.exports = function(api) {
   const flow = ['@babel/preset-flow'];
 
   //  Plugins =====================================
+  const dynamicImport = '@babel/plugin-syntax-dynamic-import';
 
   //  Return =====================================
   const presets = [env, flow];
-  const plugins = [];
+  const plugins = [dynamicImport];
   return {presets, plugins};
 };

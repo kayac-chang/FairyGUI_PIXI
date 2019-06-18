@@ -17,7 +17,7 @@ import {Button} from './button';
 
 const {defineProperty} = Object;
 
-function subComponent(attributes: Object): Component {
+function subComponent(attributes) {
   const source = temp.getSource(attributes.src);
 
   const mapByExtension = (({extention}) => (
@@ -33,7 +33,7 @@ function subComponent(attributes: Object): Component {
   return assign(comp, attributes);
 }
 
-function topComponent(source: Object): Component {
+function topComponent(source) {
   const comp = new Component();
 
   const displayElements = pipe(
@@ -178,7 +178,7 @@ function drawReversedMask(comp, mask, it) {
  *  1. topComponent like Scene in the Game.
  *  2. subComponent is a collection contains other elements.
  */
-export function component(source: Object): Component {
+export function component(source) {
   const {attributes} = source;
 
   if (attributes.src) return subComponent(attributes);

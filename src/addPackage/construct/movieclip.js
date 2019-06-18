@@ -11,7 +11,7 @@ import {divide} from 'mathjs';
 
 import {placeHolder} from './index';
 
-import {extras, Texture, Container} from 'pixi.js';
+import {extras, Texture} from 'pixi.js';
 
 const {AnimatedSprite} = extras;
 
@@ -33,7 +33,7 @@ function getOffsetPerFrame(source) {
   return map((obj) => toPair(obj.attributes.rect))(el);
 }
 
-function toFrames(src): Texture {
+function toFrames(src) {
   let textureConfigs =
     temp.selectTexturesConfig(propSatisfies(includes(src), 'id'));
 
@@ -60,7 +60,7 @@ function toFrames(src): Texture {
 /*
  *  Mapping MovieClip Type to PIXI.extra.AnimatedSprite
  */
-function movieclip({attributes}: Object): Container {
+function movieclip({attributes}) {
   const source = temp.getSource(attributes.src);
 
   const offsets = getOffsetPerFrame(source);

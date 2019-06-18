@@ -32,7 +32,7 @@ function toFontData([, ...source]) {
   )(source);
 }
 
-export function fnt2js(source: string): {} {
+export function fnt2js(source) {
   const chunkData = pipe(
       trim,
       split(/\n/),

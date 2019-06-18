@@ -12,7 +12,7 @@ function convert([id, binIndex, x, y, width, height]) {
 /*
  *  Return config data about How to get textures from the atlas.
  */
-function getTexturesConfig(source: string): Array<Object> {
+function getTexturesConfig(source) {
   const chunk = split(/\n/, source);
 
   const data = map(split(/\s/))(chunk);

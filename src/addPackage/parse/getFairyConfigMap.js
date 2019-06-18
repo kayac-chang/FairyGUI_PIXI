@@ -8,7 +8,7 @@ import {Zlib} from 'zlibjs/bin/rawinflate.min';
 /*
  * DeCompress the ArrayBuffer To UTF-8 String
  */
-function decompressToString(buffer: ArrayBuffer): string {
+function decompressToString(buffer) {
   const decompressData = new Zlib.RawInflate(buffer).decompress();
 
   return decodeToUTF8(decompressData);
@@ -17,7 +17,7 @@ function decompressToString(buffer: ArrayBuffer): string {
 /*
  * Split the huge source into a map.
  */
-function tokenization(source: string) {
+function tokenization(source) {
   const {find, takeTo, moveTo, current} = cursor(source);
 
   return recursion({});
@@ -56,7 +56,7 @@ function tokenization(source: string) {
  *     { key : source }
  *
  */
-function getFairyConfigMap(source: ArrayBuffer) : {[string]: string} {
+function getFairyConfigMap(source) {
   return pipe(
       decompressToString,
       tokenization

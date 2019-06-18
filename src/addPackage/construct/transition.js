@@ -1,5 +1,5 @@
 // @flow
-import anime, {AnimeTimelineInstance} from 'animejs';
+import anime from 'animejs';
 import {
   split, mergeWith,
   test, anyPass, prop,
@@ -145,7 +145,7 @@ function whenYOYO(elements) {
  *
  *  See Anime.js
  */
-function transition({attributes, elements}): AnimeTimelineInstance {
+function transition({attributes, elements}) {
   const timeLine = elements
     .map(prop('attributes'))
     .map(process)

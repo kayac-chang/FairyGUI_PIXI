@@ -12,7 +12,7 @@ import {Graphics} from 'pixi.js';
  *  source.name is resource type
  *  switch construct function by type
  */
-export function construct(source: Object) {
+export function construct(source) {
   const func = {
     image, movieclip, graph, text, component,
   }[source.name];

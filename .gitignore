@@ -84,3 +84,4 @@ dist/
 
 # Editor Config
 .idea/
+.DS_Store

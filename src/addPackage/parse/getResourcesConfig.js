@@ -72,7 +72,7 @@ function getPackageItems(packageID, resources) {
 /*
  * Return all resources config used by this package.
  */
-export function getResourcesConfig(json: Object): Array<Object> {
+export function getResourcesConfig(json) {
   const packageID = json.elements[0].attributes.id;
 
   const {elements} = search(propEq('name', 'resources'), json);

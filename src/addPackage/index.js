@@ -41,7 +41,7 @@ import {construct} from './construct';
  * @param {string} packageName
  * @return { function(string): PIXI.Container }
  */
-function addPackage(app, packageName: string) {
+function addPackage(app, packageName) {
   //  XML Source Map contains xml source code mapping by config name.
   const xmlSourceMap = pipe(
     getBinaryData,
@@ -92,7 +92,7 @@ function addPackage(app, packageName: string) {
    * @param {string} resName
    * @return {PIXI.Container}
    */
-  function create(resName: string) {
+  function create(resName) {
     //  Temp Global
     global.temp = {
       getSource,
@@ -111,7 +111,7 @@ function addPackage(app, packageName: string) {
     return result;
   }
 
-  function getSource(key: string) {
+  function getSource(key) {
     return sourceMap[key];
   }
 
@@ -123,7 +123,7 @@ function addPackage(app, packageName: string) {
     return select(predicate, texturesConfig);
   }
 
-  function findIdBy(resName: string) {
+  function findIdBy(resName) {
     return selectResourcesConfig(propEq('name', resName)).id;
   }
 

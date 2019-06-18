@@ -54,10 +54,12 @@ function normal(attributes) {
   function setAlign(align = 'left') {
     content.style.align = align;
 
+    if (align === 'center') content.pivot.x = content.width / 2;
+
     content.x = {
       right: holder.width - content.width,
       left: 0,
-      center: divide(holder.width - content.width, 2),
+      center: divide(holder.width, 2),
     }[align];
   }
 
