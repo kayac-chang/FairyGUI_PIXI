@@ -11,7 +11,7 @@ import {divide} from 'mathjs';
 
 import {placeHolder} from './index';
 
-import {extras, Texture} from 'pixi.js';
+import {BLEND_MODES, extras, Texture} from 'pixi.js';
 
 const {AnimatedSprite} = extras;
 
@@ -100,6 +100,11 @@ function movieclip({attributes}) {
   it.anim = anim;
 
   anim.play();
+
+  //  Blend Mode
+  if (attributes.blend) {
+    it.anim.blendMode = BLEND_MODES[attributes.blend.toUpperCase()];
+  }
 
   return assign(it, attributes);
 }
