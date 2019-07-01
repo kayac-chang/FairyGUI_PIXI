@@ -1,6 +1,5 @@
 import {toPair} from '../../util';
 import {radians} from '../../core/physic';
-import {BLEND_MODES} from 'pixi.js';
 
 function assign(it, attributes) {
   //  Name
@@ -59,11 +58,6 @@ function assign(it, attributes) {
 
   //  Interactive
   it.interactive = false;
-
-  //  Blend Mode
-  if (attributes.blend) {
-    it.blendMode = BLEND_MODES[attributes.blend.toUpperCase()];
-  }
 
   return it;
 }

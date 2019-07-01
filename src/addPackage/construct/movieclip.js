@@ -11,13 +11,15 @@ import {divide} from 'mathjs';
 
 import {placeHolder} from './index';
 
-import {BLEND_MODES, extras, Texture} from 'pixi.js';
+import {BLEND_MODES, extras, Texture, filters} from 'pixi.js';
 
 const {AnimatedSprite} = extras;
+const {ColorMatrixFilter} = filters;
 
 import {getAtlasName} from './index';
 
 import {Component} from '../override/Component';
+import {string2hex} from '../../core';
 
 function toAnimationSpeed({attributes}) {
   const {interval} = attributes;
@@ -101,9 +103,45 @@ function movieclip({attributes}) {
 
   anim.play();
 
+  //  Filter
+  if (attributes.filter === 'color') {
+    let [
+      brightness, contrast, saturate, hue,
+    ] = toPair(attributes.filterData);
+
+    const filter = new ColorMatrixFilter();
+
+    if (brightness) {
+      filter.brightness(brightness);
+    }
+    if (contrast) {
+      filter.contrast(contrast);
+    }
+    if (saturate) {
+      filter.saturate(saturate);
+    }
+    if (hue) {
+      hue = (hue * 180) - 5;
+      filter.hue(hue);
+    }
+
+    it.filters = [filter];
+  }
+
   //  Blend Mode
   if (attributes.blend) {
-    it.anim.blendMode = BLEND_MODES[attributes.blend.toUpperCase()];
+    const blendMode = BLEND_MODES[attributes.blend.toUpperCase()];
+
+    if (attributes.filter) {
+      it.filters[0].blendMode = blendMode;
+    } else {
+      it.anim.blendMode = blendMode;
+    }
+  }
+
+  //  Color
+  if (attributes.color) {
+    it.anim.tint = string2hex(attributes.color);
   }
 
   return assign(it, attributes);

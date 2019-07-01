@@ -6,7 +6,7 @@ import {string2hex} from '../../core/color';
 
 import {propEq} from 'ramda';
 
-import {Sprite, mesh, Texture, filters} from 'pixi.js';
+import {Sprite, mesh, Texture, filters, BLEND_MODES} from 'pixi.js';
 import {toPair} from '../../util/string';
 
 const {ColorMatrixFilter} = filters;
@@ -56,19 +56,40 @@ function image(obj) {
   if (attributes.color) {
     it.tint = string2hex(attributes.color);
   }
+
   if (attributes.filter === 'color') {
-    const [
+    let [
       brightness, contrast, saturate, hue,
     ] = toPair(attributes.filterData);
 
     const filter = new ColorMatrixFilter();
 
-    brightness && filter.brightness(brightness);
-    contrast && filter.contrast(contrast);
-    saturate && filter.saturate(saturate);
-    hue && filter.hue(hue);
+    if (brightness) {
+      filter.brightness(brightness);
+    }
+    if (contrast) {
+      filter.contrast(contrast);
+    }
+    if (saturate) {
+      filter.saturate(saturate);
+    }
+    if (hue) {
+      hue = (hue * 180) - 5;
+      filter.hue(hue);
+    }
 
     it.filters = [filter];
+  }
+
+  //  Blend Mode
+  if (attributes.blend) {
+    const blendMode = BLEND_MODES[attributes.blend.toUpperCase()];
+
+    if (attributes.filter) {
+      it.filters[0].blendMode = blendMode;
+    } else {
+      it.blendMode = blendMode;
+    }
   }
 
   return it;
