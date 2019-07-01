@@ -121,7 +121,7 @@ function movieclip({attributes}) {
       filter.saturate(saturate);
     }
     if (hue) {
-      hue = (hue * 180) - 5;
+      hue = (hue * 180);
       filter.hue(hue);
     }
 
