@@ -74,7 +74,7 @@ function image(obj) {
       filter.saturate(saturate);
     }
     if (hue) {
-      hue = (hue * 180);
+      hue = (hue * 180) - 10;
       filter.hue(hue);
     }
 

@@ -21,7 +21,7 @@ const {
 module.exports = function(...args) {
   return {
     //  Entry   ===========================================
-    entry: resolve(sourceDir, 'index.js'),
+    entry: resolve(testDir, 'main.js'),
 
     //  Output  ===========================================
     output: {
