@@ -15,15 +15,15 @@ import {
 
 function mapByType({type}) {
   return {
-    XY: position,
-    Size: size,
-    Alpha: alpha,
-    Rotation: rotation,
-    Scale: scale,
-    Skew: skew,
-    Color: hexToRgb,
-    Pivot: pivot,
-    Visible: visible,
+    'XY': position,
+    'Size': size,
+    'Alpha': alpha,
+    'Rotation': rotation,
+    'Scale': scale,
+    'Skew': skew,
+    'Color': hexToRgb,
+    'Pivot': pivot,
+    'Visible': visible,
   }[type];
 }
 
@@ -36,7 +36,7 @@ function easing(source = 'Quad.Out') {
   return 'ease'.concat(type, func);
 }
 
-function getTarget({type, target}) {
+function getTarget({type, target, value}) {
   const element = temp.getChild(target);
 
   const targets = getControlTargetByType(type);
@@ -49,7 +49,8 @@ function getTarget({type, target}) {
         (type === 'Skew') ? element.skew :
           (type === 'Pivot') ? element.pivot :
             (type === 'Color') ? {r: 0, g: 0, b: 0} :
-              element
+              (type === 'Transition') ? element.transition[value] :
+                element
     );
   }
 }
@@ -75,6 +76,11 @@ function tweenAnimation(attributes) {
 
   const {element, targets} = getTarget(attributes);
 
+  if (attributes.type === 'Scale') {
+    fromTo.x = fromTo.x.map((num) => targets.x * num);
+    fromTo.y = fromTo.y.map((num) => targets.y * num);
+  }
+
   return {
     targets,
     ...fromTo,
@@ -92,25 +98,45 @@ function tweenAnimation(attributes) {
 }
 
 function keyFrame(attributes) {
-  const mapping = mapByType(attributes);
-
-  const result = mapping(...(toPair(attributes.value)));
+  const {targets} = getTarget(attributes);
 
   const byFrameRate = deltaTime(24);
-
-  const {targets} = getTarget(attributes);
 
   const time =
     byFrameRate(attributes.time) === 0 ? 0 : byFrameRate(attributes.time);
 
+  if (attributes.type === 'Transition') {
+    return {
+      time,
+      begin() {
+        targets.play();
+      },
+    };
+  }
+
+  if (attributes.type === 'Animation') {
+    const [frame, command] = attributes.value.split(/,/g);
+
+    return {
+      time,
+      begin() {
+        if (command === 'p') targets.anim.gotoAndPlay(Number(frame));
+        if (command === 's') targets.anim.gotoAndStop(Number(frame));
+      },
+    };
+  }
+
+  const mapping = mapByType(attributes);
+
+  const result = mapping(...(toPair(attributes.value)));
+
   return {
     time,
-    begin,
-  };
 
-  function begin(anim) {
-    anim.set(targets, result);
-  }
+    begin(anim) {
+      anim.set(targets, result);
+    },
+  };
 }
 
 function process(attributes) {

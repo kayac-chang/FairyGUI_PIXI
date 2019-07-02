@@ -1,7 +1,7 @@
 // @flow
 import {search, toPair} from '../../util';
 import {
-  map, propEq, filter,
+  map, filter,
   has, pipe, find, prop,
   identity,
 } from 'ramda';
@@ -14,8 +14,6 @@ import {Component} from '../override/Component';
 import {transition} from './transition';
 import {construct} from './index';
 import {Button} from './button';
-
-const {defineProperty} = Object;
 
 function subComponent(attributes) {
   const source = temp.getSource(attributes.src);
@@ -57,19 +55,20 @@ function topComponent(source) {
     return comp.getChildByName(target.attributes.name);
   };
 
-  const transitions = pipe(
+  const _transitions = pipe(
     search(({name}) => name === 'transition'),
     (args) => [].concat(args),
     filter(has('elements')),
     map(transition),
   )(source);
 
-  defineProperty(comp, 'transitions', {
-    get: () => transitions,
-  });
-
-  comp.getTransition = (name) =>
-    find(propEq('name', name))(transitions);
+  if (_transitions.length > 0) {
+    comp.transition =
+      _transitions.reduce((obj, tran) => {
+        obj[tran.name] = tran;
+        return obj;
+      }, {});
+  }
 
   const it = assign(comp, source.attributes);
   it.scale.set(1, 1);
