@@ -49,7 +49,8 @@ function getTarget({type, target, value}) {
         (type === 'Skew') ? element.skew :
           (type === 'Pivot') ? element.pivot :
             (type === 'Color') ? {r: 0, g: 0, b: 0} :
-              (type === 'Transition') ? element.transition[value] :
+              (type === 'Transition') ?
+                element.transition[value.split(',')[0]] :
                 element
     );
   }
@@ -106,6 +107,16 @@ function keyFrame(attributes) {
     byFrameRate(attributes.time) === 0 ? 0 : byFrameRate(attributes.time);
 
   if (attributes.type === 'Transition') {
+    let [, loop] = attributes.value.split(',');
+
+    if (loop) {
+      loop = Number(loop);
+
+      if (loop === -1) loop = true;
+
+      targets.loop = loop;
+    }
+
     return {
       time,
       begin() {

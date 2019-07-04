@@ -2,6 +2,9 @@ import {toPair} from '../../util';
 import {radians} from '../../core/physic';
 
 function assign(it, attributes) {
+  //  Id
+  it.id = (attributes.id) || '';
+
   //  Name
   it.name = (attributes.name) || '';
 
@@ -54,6 +57,11 @@ function assign(it, attributes) {
   //  Visible
   if (attributes.visible === 'false') {
     it.visible = false;
+  }
+
+  // Group
+  if (attributes.group) {
+    it.group = attributes.group;
   }
 
   //  Interactive

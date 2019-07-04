@@ -28,6 +28,8 @@ function subComponent(attributes) {
     mapByExtension,
   )(source);
 
+  if (attributes.name === 'alien') window.alien = comp;
+
   return assign(comp, attributes);
 }
 
@@ -39,6 +41,15 @@ function topComponent(source) {
     prop('elements'),
     map(construct),
   )(source);
+
+  displayElements
+    .filter(({group}) => group)
+    .forEach((element) => {
+      displayElements
+        .find(({id}) => id === element.group)
+        .list
+        .push(element);
+    });
 
   comp.addChild(...displayElements);
 
