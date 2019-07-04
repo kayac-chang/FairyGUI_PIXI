@@ -22,6 +22,7 @@ function load(app) {
     .add('main@atlas0_4.png')
     .add('main@atlas0_5.png')
     .add('main@atlas0_6.png')
+    .add('main@atlas0_7.png')
     .add('main.fui', {xhrType: 'arraybuffer'});
 
   return new Promise(onLoaded);
@@ -39,6 +40,8 @@ function start(app) {
   comp.height = app.screen.height;
 
   app.stage.addChild(comp);
+
+  window.bigwin = comp.getChildByName('bigwin');
 }
 
 //  Execute

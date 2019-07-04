@@ -77,11 +77,6 @@ function tweenAnimation(attributes) {
 
   const {element, targets} = getTarget(attributes);
 
-  if (attributes.type === 'Scale') {
-    fromTo.x = fromTo.x.map((num) => targets.x * num);
-    fromTo.y = fromTo.y.map((num) => targets.y * num);
-  }
-
   return {
     targets,
     ...fromTo,
