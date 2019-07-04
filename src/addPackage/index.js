@@ -47,7 +47,7 @@ function addPackage(app, packageName) {
     getBinaryData,
     getFairyConfigMap,
   )(packageName);
-  log(xmlSourceMap);
+  // log(xmlSourceMap);
 
   //  Resources Config contains all resources configs used by this package.
   const resourcesConfig = pipe(
