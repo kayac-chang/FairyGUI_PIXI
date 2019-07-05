@@ -41,12 +41,17 @@ function assign(it, attributes) {
   //  Pivot
   if (attributes.pivot) {
     const [pivotX, pivotY] = toPair(attributes.pivot);
-    it.pivot.set(pivotX, pivotY);
+    it.pivot.set(
+      it.width * pivotX,
+      it.height * pivotY
+    );
+  }
 
-    //  Anchor
-    if (attributes.anchor === 'true') {
-      it.anchor.set(pivotX, pivotY);
-    }
+  //  Anchor
+  if (attributes.anchor === 'true') {
+    const [pivotX, pivotY] = toPair(attributes.pivot);
+    it.pivot.set(0);
+    it.anchor.set(pivotX, pivotY);
   }
 
   //  Alpha

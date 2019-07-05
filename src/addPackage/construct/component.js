@@ -8,12 +8,14 @@ import {
 
 import {assign} from './assign';
 
-import {Graphics} from 'pixi.js';
+import {BLEND_MODES, filters, Graphics} from 'pixi.js';
 import {Component} from '../override/Component';
 
 import {transition} from './transition';
 import {construct} from './index';
 import {Button} from './button';
+
+const {ColorMatrixFilter} = filters;
 
 function subComponent(attributes) {
   const source = temp.getSource(attributes.src);
@@ -28,7 +30,41 @@ function subComponent(attributes) {
     mapByExtension,
   )(source);
 
-  if (attributes.name === 'alien') window.alien = comp;
+  //  Filter
+  if (attributes.filter === 'color') {
+    let [
+      brightness, contrast, saturate, hue,
+    ] = toPair(attributes.filterData);
+
+    const filter = new ColorMatrixFilter();
+
+    if (brightness) {
+      filter.brightness(brightness);
+    }
+    if (contrast) {
+      filter.contrast(contrast);
+    }
+    if (saturate) {
+      filter.saturate(saturate);
+    }
+    if (hue) {
+      filter.hue((hue * 180) - 10);
+    }
+
+    comp.filters = [filter];
+  }
+
+  //  Blend Mode
+  if (attributes.blend) {
+    const blendMode = BLEND_MODES[attributes.blend.toUpperCase()];
+
+    if (attributes.filter) {
+      comp.filters
+        .forEach((filter) => filter.blendMode = blendMode);
+    } else {
+      comp.blendMode = blendMode;
+    }
+  }
 
   return assign(comp, attributes);
 }

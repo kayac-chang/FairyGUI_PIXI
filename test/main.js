@@ -40,8 +40,6 @@ function start(app) {
   comp.height = app.screen.height;
 
   app.stage.addChild(comp);
-
-  window.bigwin = comp.getChildByName('bigwin');
 }
 
 //  Execute

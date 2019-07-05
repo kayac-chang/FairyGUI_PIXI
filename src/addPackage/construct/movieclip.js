@@ -121,8 +121,7 @@ function movieclip({attributes}) {
       filter.saturate(saturate);
     }
     if (hue) {
-      hue = (hue * 180) - 10;
-      filter.hue(hue);
+      filter.hue((hue * 180) - 10);
     }
 
     it.filters = [filter];
@@ -133,7 +132,8 @@ function movieclip({attributes}) {
     const blendMode = BLEND_MODES[attributes.blend.toUpperCase()];
 
     if (attributes.filter) {
-      it.filters[0].blendMode = blendMode;
+      it.filters
+        .forEach((filter) => filter.blendMode = blendMode);
     } else {
       it.anim.blendMode = blendMode;
     }
@@ -142,6 +142,24 @@ function movieclip({attributes}) {
   //  Color
   if (attributes.color) {
     it.anim.tint = string2hex(attributes.color);
+  }
+
+  //  Anchor
+  if (attributes.anchor === 'true') {
+    const [pivotX, pivotY] = toPair(attributes.pivot);
+    it.anim.anchor.set(pivotX, pivotY);
+
+    attributes.pivot = undefined;
+    attributes.anchor = undefined;
+  }
+
+  if (attributes.pivot) {
+    const [pivotX, pivotY] = toPair(attributes.pivot);
+    it.anim.pivot.set(
+      it.width * pivotX,
+      it.height * pivotY,
+    );
+    attributes.pivot = undefined;
   }
 
   return assign(it, attributes);
