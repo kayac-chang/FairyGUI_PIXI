@@ -1,6 +1,6 @@
 {
   "name": "pixi_fairygui",
-  "version": "0.3.71",
+  "version": "0.3.72",
   "description": "The FairyGUI to pixi.js SDK",
   "scripts": {
     "dos2unix": "find src -type f -exec sed -i 's/^M$//' {} +",

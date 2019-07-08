@@ -148,8 +148,9 @@ function keyFrame(attributes) {
 function process(attributes) {
   if (shouldAnimate(attributes)) {
     return tweenAnimation(attributes);
+  } else {
+    return keyFrame(attributes);
   }
-  return keyFrame(attributes);
 }
 
 function getLoop(repeat, elements) {

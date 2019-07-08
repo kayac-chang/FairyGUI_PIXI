@@ -1,6 +1,7 @@
 // @flow
 import {
   propSatisfies, includes, propEq, map,
+  clone,
 } from 'ramda';
 
 import {toPair} from '../../util';
@@ -63,11 +64,13 @@ function toFrames(src) {
  *  Mapping MovieClip Type to PIXI.extra.AnimatedSprite
  */
 function movieclip({attributes}) {
-  const source = temp.getSource(attributes.src);
+  const _attr = clone(attributes);
+
+  const source = temp.getSource(_attr.src);
 
   const offsets = getOffsetPerFrame(source);
 
-  const frames = toFrames(attributes.src, offsets);
+  const frames = toFrames(_attr.src, offsets);
 
   const anim = new AnimatedSprite(frames);
 
@@ -81,6 +84,47 @@ function movieclip({attributes}) {
 
   const it = Component();
   it.addChild(placeholder, anim);
+
+  //  Filter
+  if (_attr.filter === 'color') {
+    let [
+      brightness, contrast, saturate, hue,
+    ] = toPair(_attr.filterData);
+
+    const filter = new ColorMatrixFilter();
+
+    if (brightness) {
+      filter.brightness(brightness);
+    }
+    if (contrast) {
+      filter.contrast(contrast);
+    }
+    if (saturate) {
+      filter.saturate(saturate);
+    }
+    if (hue) {
+      filter.hue((hue * 180) - 10);
+    }
+
+    it.filters = [filter];
+  }
+
+  //  Blend Mode
+  if (_attr.blend) {
+    const blendMode = BLEND_MODES[_attr.blend.toUpperCase()];
+
+    if (_attr.filter) {
+      it.filters
+        .forEach((filter) => filter.blendMode = blendMode);
+    } else {
+      anim.blendMode = blendMode;
+    }
+  }
+
+  //  Color
+  if (_attr.color) {
+    anim.tint = string2hex(_attr.color);
+  }
 
   anim.animationSpeed = toAnimationSpeed(source);
 
@@ -103,66 +147,16 @@ function movieclip({attributes}) {
 
   anim.play();
 
-  //  Filter
-  if (attributes.filter === 'color') {
-    let [
-      brightness, contrast, saturate, hue,
-    ] = toPair(attributes.filterData);
-
-    const filter = new ColorMatrixFilter();
-
-    if (brightness) {
-      filter.brightness(brightness);
-    }
-    if (contrast) {
-      filter.contrast(contrast);
-    }
-    if (saturate) {
-      filter.saturate(saturate);
-    }
-    if (hue) {
-      filter.hue((hue * 180) - 10);
-    }
-
-    it.filters = [filter];
-  }
-
-  //  Blend Mode
-  if (attributes.blend) {
-    const blendMode = BLEND_MODES[attributes.blend.toUpperCase()];
-
-    if (attributes.filter) {
-      it.filters
-        .forEach((filter) => filter.blendMode = blendMode);
-    } else {
-      it.anim.blendMode = blendMode;
-    }
-  }
-
-  //  Color
-  if (attributes.color) {
-    it.anim.tint = string2hex(attributes.color);
-  }
-
   //  Anchor
-  if (attributes.anchor === 'true') {
-    const [pivotX, pivotY] = toPair(attributes.pivot);
-    it.anim.anchor.set(pivotX, pivotY);
+  if (_attr.anchor === 'true') {
+    const [pivotX, pivotY] = toPair(_attr.pivot);
+    it.anchor.set(pivotX, pivotY);
+    it.pivot.set(it.width * pivotX, it.height * pivotY);
 
-    attributes.pivot = undefined;
-    attributes.anchor = undefined;
+    _attr.anchor = undefined;
   }
 
-  if (attributes.pivot) {
-    const [pivotX, pivotY] = toPair(attributes.pivot);
-    it.anim.pivot.set(
-      it.width * pivotX,
-      it.height * pivotY,
-    );
-    attributes.pivot = undefined;
-  }
-
-  return assign(it, attributes);
+  return assign(it, _attr);
 }
 
 export {movieclip};
