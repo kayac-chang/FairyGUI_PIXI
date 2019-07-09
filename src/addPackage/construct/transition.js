@@ -13,6 +13,8 @@ import {
   hexToRgb, deltaTime,
 } from '../../core';
 
+const {assign} = Object;
+
 function mapByType({type}) {
   return {
     'XY': position,
@@ -36,7 +38,7 @@ function easing(source = 'Quad.Out') {
   return 'ease'.concat(type, func);
 }
 
-function getTarget({type, target, value}) {
+function getTarget({type, target}) {
   const element = temp.getChild(target);
 
   const targets = getControlTargetByType(type);
@@ -49,9 +51,7 @@ function getTarget({type, target, value}) {
         (type === 'Skew') ? element.skew :
           (type === 'Pivot') ? element.pivot :
             (type === 'Color') ? {r: 0, g: 0, b: 0} :
-              (type === 'Transition') ?
-                element.transition[value.split(',')[0]] :
-                element
+              element
     );
   }
 }
@@ -99,28 +99,35 @@ function keyFrame(attributes) {
   const byFrameRate = deltaTime(24);
 
   const time =
-    byFrameRate(attributes.time) === 0 ? 0 : byFrameRate(attributes.time);
+    byFrameRate(attributes.time) === 0 ?
+      0 : byFrameRate(attributes.time);
 
-  const animation = {time};
+  const animation = {type: 'keyFrame', time};
 
   if (attributes.type === 'Transition') {
     //
-    let [, loop] = attributes.value.split(',');
+    let [name, loop] = attributes.value.split(',');
 
-    targets.loop =
-      (loop === '-1') ? true : Number(loop);
+    const transition = targets.transition[name];
 
-    animation.begin =
-      (loop === '0') ?
-        () => targets.pause() : () => targets.restart();
+    animation.call = () => {
+      transition.loop =
+        (loop === '-1') ? true :
+          (loop !== undefined) ? Number(loop) :
+            undefined;
+
+      (loop === '0') ? transition.pause() : transition.play();
+    };
     //
   } else if (attributes.type === 'Animation') {
     //
     const [frame, command] = attributes.value.split(/,/g);
 
-    animation.begin =
-      (command === 'p') ? () => targets.anim.gotoAndPlay(Number(frame)) :
-        (command === 's') ? () => targets.anim.gotoAndPlay(Number(frame)) :
+    const anim = targets.anim;
+
+    animation.call =
+      (command === 'p') ? () => anim.gotoAndPlay(Number(frame)) :
+        (command === 's') ? () => anim.gotoAndStop(Number(frame)) :
           undefined;
     //
   } else {
@@ -129,7 +136,7 @@ function keyFrame(attributes) {
 
     const result = mapping(...(toPair(attributes.value)));
 
-    animation.begin = (anim) => anim.set(targets, result);
+    animation.call = () => assign(targets, result);
     //
   }
 
@@ -172,6 +179,8 @@ function whenYOYO(elements) {
 function transition({attributes, elements}) {
   let timeLine = {};
 
+  const keyFrames = [];
+
   try {
     timeLine = elements
       .map(prop('attributes'))
@@ -193,9 +202,18 @@ function transition({attributes, elements}) {
     timeLine.restart();
   }
 
+  timeLine.begin = () =>
+    keyFrames.forEach((func) => func());
+
   return timeLine;
 
   function addTimeFrame(time, frame) {
+    if (frame.type === 'keyFrame') {
+      keyFrames.push(
+        () => setTimeout(frame.call, frame.time),
+      );
+    }
+
     return time.add(frame, frame.time);
   }
 
