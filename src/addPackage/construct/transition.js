@@ -179,10 +179,18 @@ function whenYOYO(elements) {
  *  See Anime.js
  */
 function transition({attributes, elements}) {
-  const timeLine = elements
-    .map(prop('attributes'))
-    .map(process)
-    .reduce(addTimeFrame, anime.timeline());
+  let timeLine = {};
+
+  try {
+    timeLine = elements
+      .map(prop('attributes'))
+      .map(process)
+      .reduce(addTimeFrame, anime.timeline());
+  } catch (e) {
+    throw new Error(
+      `Occur when create Transition: ${attributes.name}, ${e}`
+    );
+  }
 
   timeLine.name = attributes.name;
 

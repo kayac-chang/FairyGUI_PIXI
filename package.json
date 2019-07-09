@@ -1,6 +1,6 @@
 {
   "name": "pixi_fairygui",
-  "version": "0.3.72",
+  "version": "0.3.73",
   "description": "The FairyGUI to pixi.js SDK",
   "scripts": {
     "dos2unix": "find src -type f -exec sed -i 's/^M$//' {} +",
@@ -8,7 +8,7 @@
     "webpack": "webpack --config ./tools/build.js",
     "build": "npm run clean && NODE_ENV=production npm run webpack -- --env.mode=production",
     "watch": "npm run clean && NODE_ENV=development npm run webpack -- --env.mode=development --watch",
-    "dev-server": "webpack-dev-server --config ./tools/build.js",
+    "dev-server": "webpack-dev-server --config ./tools/build.js --host 0.0.0.0",
     "start": "npm run clean && NODE_ENV=development npm run dev-server -- --env.mode=development --open"
   },
   "main": "src/index.js",

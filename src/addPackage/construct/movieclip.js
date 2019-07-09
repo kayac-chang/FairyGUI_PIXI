@@ -12,7 +12,9 @@ import {divide} from 'mathjs';
 
 import {placeHolder} from './index';
 
-import {BLEND_MODES, extras, Texture, filters} from 'pixi.js';
+import {
+  BLEND_MODES, extras, Texture, filters,
+} from 'pixi.js';
 
 const {AnimatedSprite} = extras;
 const {ColorMatrixFilter} = filters;

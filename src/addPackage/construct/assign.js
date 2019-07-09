@@ -13,6 +13,11 @@ function assign(it, attributes) {
     const [width, height] = toPair(attributes.size);
     it.width = width;
     it.height = height;
+
+    if (it.filterArea) {
+      it.filterArea.width = width;
+      it.filterArea.height = height;
+    }
   }
 
   //  Scale
