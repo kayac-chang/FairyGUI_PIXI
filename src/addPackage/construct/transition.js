@@ -101,48 +101,39 @@ function keyFrame(attributes) {
   const time =
     byFrameRate(attributes.time) === 0 ? 0 : byFrameRate(attributes.time);
 
+  const animation = {time};
+
   if (attributes.type === 'Transition') {
+    //
     let [, loop] = attributes.value.split(',');
 
-    if (loop) {
-      loop = Number(loop);
+    targets.loop =
+      (loop === '-1') ? true : Number(loop);
 
-      if (loop === -1) loop = true;
-
-      targets.loop = loop;
-    }
-
-    return {
-      time,
-      begin() {
-        targets.play();
-      },
-    };
-  }
-
-  if (attributes.type === 'Animation') {
+    animation.begin =
+      (loop === '0') ?
+        () => targets.pause() : () => targets.restart();
+    //
+  } else if (attributes.type === 'Animation') {
+    //
     const [frame, command] = attributes.value.split(/,/g);
 
-    return {
-      time,
-      begin() {
-        if (command === 'p') targets.anim.gotoAndPlay(Number(frame));
-        if (command === 's') targets.anim.gotoAndStop(Number(frame));
-      },
-    };
+    animation.begin =
+      (command === 'p') ? () => targets.anim.gotoAndPlay(Number(frame)) :
+        (command === 's') ? () => targets.anim.gotoAndPlay(Number(frame)) :
+          undefined;
+    //
+  } else {
+    //
+    const mapping = mapByType(attributes);
+
+    const result = mapping(...(toPair(attributes.value)));
+
+    animation.begin = (anim) => anim.set(targets, result);
+    //
   }
 
-  const mapping = mapByType(attributes);
-
-  const result = mapping(...(toPair(attributes.value)));
-
-  return {
-    time,
-
-    begin(anim) {
-      anim.set(targets, result);
-    },
-  };
+  return animation;
 }
 
 function process(attributes) {
@@ -188,7 +179,7 @@ function transition({attributes, elements}) {
       .reduce(addTimeFrame, anime.timeline());
   } catch (e) {
     throw new Error(
-      `Occur when create Transition: ${attributes.name}, ${e}`
+      `Occur when create Transition: ${attributes.name}, ${e}`,
     );
   }
 
