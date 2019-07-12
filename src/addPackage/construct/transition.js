@@ -35,6 +35,14 @@ function easing(source = 'Quad.Out') {
   }
 
   const [func, type] = split('.', source);
+
+  if (func === 'Elastic') {
+    const amplitude = 1;
+    const period = 0.5;
+
+    return 'ease' + type + 'Elastic' + `(${amplitude}, ${period})`;
+  }
+
   return 'ease'.concat(type, func);
 }
 
@@ -65,6 +73,8 @@ function getFromTo(attributes) {
 
   const {startValue, endValue} = attributes;
   const start = mapping(...(toPair(startValue)));
+
+  if (!endValue) return;
   const end = mapping(...(toPair(endValue)));
 
   return mergeWith((a, b) => [a, b])(start, end);
@@ -72,6 +82,8 @@ function getFromTo(attributes) {
 
 function tweenAnimation(attributes) {
   const fromTo = getFromTo(attributes);
+
+  if (!fromTo) return {};
 
   const byFrameRate = deltaTime(24);
 
