@@ -25,6 +25,7 @@ function load(app) {
     .add('main@atlas0_7.png')
     .add('main@atlas0_8.png')
     .add('main@atlas0_9.png')
+    .add('main@atlas0_10.png')
     .add('main.fui', {xhrType: 'arraybuffer'});
 
   return new Promise(onLoaded);

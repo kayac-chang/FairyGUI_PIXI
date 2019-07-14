@@ -12,6 +12,7 @@ import {
   scale, skew, pivot, visible, tint,
   hexToRgb, deltaTime,
 } from '../../core';
+import {shake} from '../effect/shake';
 
 const {assign} = Object;
 
@@ -142,6 +143,11 @@ function keyFrame(attributes) {
         (command === 's') ? () => anim.gotoAndStop(Number(frame)) :
           undefined;
     //
+  } else if (attributes.type === 'Shake') {
+    const [amplitude, seconds] = toPair(attributes.value);
+    const duration = seconds * 1000;
+
+    animation.call = () => shake({targets, amplitude, duration});
   } else {
     //
     const mapping = mapByType(attributes);
