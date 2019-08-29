@@ -90,14 +90,13 @@ function tweenAnimation(attributes) {
 
   const {element, targets} = getTarget(attributes);
 
-  return {
+  return Object.assign(fromTo, {
     targets,
-    ...fromTo,
     duration: byFrameRate(attributes.duration),
     time: byFrameRate(attributes.time),
     easing: easing(attributes.ease),
     update,
-  };
+  });
 
   function update() {
     if (attributes.type === 'Color') {

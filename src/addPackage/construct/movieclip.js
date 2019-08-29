@@ -82,7 +82,9 @@ function movieclip({attributes}) {
     return rectA > rectB ? a : b;
   });
 
-  const placeholder = placeHolder(maxFrame.width, maxFrame.height);
+  const size = Math.max(maxFrame.width, maxFrame.height);
+
+  const placeholder = placeHolder(size, size);
 
   const it = Component();
   it.addChild(placeholder, anim);
@@ -133,8 +135,7 @@ function movieclip({attributes}) {
   anim.onFrameChange = function(currentFrame) {
     const [offsetX, offsetY] = offsets[currentFrame];
 
-    anim.position.x = offsetX * anim.scale.x;
-    anim.position.y = offsetY * anim.scale.y;
+    anim.position.set(offsetX, offsetY);
 
     anim.emit('change', currentFrame);
 
