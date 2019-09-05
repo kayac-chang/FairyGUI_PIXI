@@ -148,8 +148,6 @@ function movieclip({attributes}) {
 
   it.anim = anim;
 
-  anim.play();
-
   //  Anchor
   if (_attr.anchor === 'true') {
     const [pivotX, pivotY] = toPair(_attr.pivot);

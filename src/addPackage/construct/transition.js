@@ -31,7 +31,7 @@ function mapByType({type}) {
 }
 
 function easing(source = 'Quad.Out') {
-  if (anyPass([test(/Bounce+/i), test(/linear/i)])(source)) {
+  if (test(/linear/i, source)) {
     return 'linear';
   }
 
