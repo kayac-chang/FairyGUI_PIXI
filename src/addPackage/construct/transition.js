@@ -2,7 +2,7 @@
 import anime from 'animejs';
 import {
   split, mergeWith,
-  test, anyPass, prop,
+  test, prop,
 } from 'ramda';
 
 import {toPair, bool} from '../../util';

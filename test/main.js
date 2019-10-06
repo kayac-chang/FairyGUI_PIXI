@@ -15,9 +15,8 @@ function main(...args) {
 function load(app) {
   app.loader.baseUrl = 'assets';
   app.loader
-    .add('main@atlas0.png')
-    .add('main@atlas0_1.png')
-    .add('main.fui', {xhrType: 'arraybuffer'});
+    .add('test@atlas0.png')
+    .add('test.fui', {xhrType: 'arraybuffer'});
 
   return new Promise(onLoaded);
 
@@ -27,7 +26,7 @@ function load(app) {
 }
 
 function start(app) {
-  const create = addPackage(app, 'main');
+  const create = addPackage(app, 'test');
   const comp = create('Test');
 
   comp.width = app.screen.width;
