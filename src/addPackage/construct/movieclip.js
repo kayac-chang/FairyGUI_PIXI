@@ -13,10 +13,10 @@ import {divide} from 'mathjs';
 import {placeHolder} from './index';
 
 import {
-  BLEND_MODES, extras, Texture, filters,
+  BLEND_MODES, Texture, filters,
+  AnimatedSprite,
 } from 'pixi.js';
 
-const {AnimatedSprite} = extras;
 const {ColorMatrixFilter} = filters;
 
 import {getAtlasName} from './index';

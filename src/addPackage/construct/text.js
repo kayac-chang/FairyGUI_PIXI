@@ -1,9 +1,7 @@
 // @flow
 import {
-  Text, extras,
+  Text, BitmapText,
 } from 'pixi.js';
-
-const {BitmapText} = extras;
 
 import {toPair} from '../../util';
 import {assign} from './assign';

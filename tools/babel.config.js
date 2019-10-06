@@ -22,10 +22,9 @@ module.exports = function(api) {
   const flow = ['@babel/preset-flow'];
 
   //  Plugins =====================================
-  const dynamicImport = '@babel/plugin-syntax-dynamic-import';
 
   //  Return =====================================
   const presets = [env, flow];
-  const plugins = [dynamicImport];
+  const plugins = [];
   return {presets, plugins};
 };

@@ -6,11 +6,10 @@ import {string2hex} from '../../core/color';
 
 import {propEq} from 'ramda';
 
-import {Sprite, mesh, Texture, filters, BLEND_MODES} from 'pixi.js';
+import {Sprite, NineSlicePlane, Texture, filters, BLEND_MODES} from 'pixi.js';
 import {toPair} from '../../util/string';
 
 const {ColorMatrixFilter} = filters;
-const {NineSlicePlane} = mesh;
 
 function sprite({id, binIndex, frame}) {
   const atlasName = getAtlasName(id, binIndex);
