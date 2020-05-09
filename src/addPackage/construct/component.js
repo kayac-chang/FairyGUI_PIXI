@@ -1,40 +1,29 @@
 // @flow
-import {search, toPair} from '../../util';
-import {
-  map, filter,
-  has, pipe, find, prop,
-  identity,
-} from 'ramda';
+import { search, toPair } from "../../util";
+import { map, filter, has, pipe, find, prop, identity } from "ramda";
 
-import {assign} from './assign';
+import { assign } from "./assign";
 
-import {BLEND_MODES, filters, Graphics} from 'pixi.js';
-import {Component} from '../override/Component';
+import { BLEND_MODES, filters, Graphics } from "pixi.js";
+import { Component } from "../override/Component";
 
-import {transition} from './transition';
-import {construct} from './index';
-import {Button} from './button';
+import { transition } from "./transition";
+import { construct } from "./index";
+import { Button } from "./button";
 
-const {ColorMatrixFilter} = filters;
+const { ColorMatrixFilter } = filters;
 
 function subComponent(attributes) {
   const source = temp.getSource(attributes.src);
 
-  const mapByExtension = (({extention}) => (
-    (extention === 'Button') ? Button(source) :
-      identity
-  ))(source.attributes);
+  const mapByExtension = (({ extention }) =>
+    extention === "Button" ? Button(source) : identity)(source.attributes);
 
-  const comp = pipe(
-    topComponent,
-    mapByExtension,
-  )(source);
+  const comp = pipe(topComponent, mapByExtension)(source);
 
   //  Filter
-  if (attributes.filter === 'color') {
-    let [
-      brightness, contrast, saturate, hue,
-    ] = toPair(attributes.filterData);
+  if (attributes.filter === "color") {
+    let [brightness, contrast, saturate, hue] = toPair(attributes.filterData);
 
     const filter = new ColorMatrixFilter();
 
@@ -48,7 +37,7 @@ function subComponent(attributes) {
       filter.saturate(saturate);
     }
     if (hue) {
-      filter.hue((hue * 180) - 10);
+      filter.hue(hue * 180 - 10);
     }
 
     comp.filters = [filter];
@@ -59,8 +48,7 @@ function subComponent(attributes) {
     const blendMode = BLEND_MODES[attributes.blend.toUpperCase()];
 
     if (attributes.filter) {
-      comp.filters
-        .forEach((filter) => filter.blendMode = blendMode);
+      comp.filters.forEach((filter) => (filter.blendMode = blendMode));
     } else {
       comp.blendMode = blendMode;
     }
@@ -73,48 +61,42 @@ function topComponent(source) {
   const comp = new Component();
 
   const displayElements = pipe(
-    search(({name}) => name === 'displayList'),
-    prop('elements'),
-    map(construct),
+    search(({ name }) => name === "displayList"),
+    prop("elements"),
+    map(construct)
   )(source);
 
   displayElements
-    .filter(({group}) => group)
+    .filter(({ group }) => group)
     .forEach((element) => {
-      displayElements
-        .find(({id}) => id === element.group)
-        .list
-        .push(element);
+      displayElements.find(({ id }) => id === element.group).list.push(element);
     });
 
   comp.addChild(...displayElements);
 
   temp.getChild = (_id) => {
     const displayList = pipe(
-      search(({name}) => name === 'displayList'),
-      prop('elements'),
+      search(({ name }) => name === "displayList"),
+      prop("elements")
     )(source);
 
-    const target = find(
-      ({attributes}) => attributes.id === _id,
-    )(displayList);
+    const target = find(({ attributes }) => attributes.id === _id)(displayList);
 
     return comp.getChildByName(target.attributes.name);
   };
 
   const _transitions = pipe(
-    search(({name}) => name === 'transition'),
+    search(({ name }) => name === "transition"),
     (args) => [].concat(args),
-    filter(has('elements')),
-    map(transition),
+    filter(has("elements")),
+    map(transition)
   )(source);
 
   if (_transitions.length > 0) {
-    comp.transition =
-      _transitions.reduce((obj, tran) => {
-        obj[tran.name] = tran;
-        return obj;
-      }, {});
+    comp.transition = _transitions.reduce((obj, tran) => {
+      obj[tran.name] = tran;
+      return obj;
+    }, {});
   }
 
   const it = assign(comp, source.attributes);
@@ -124,20 +106,20 @@ function topComponent(source) {
     const mask = temp.getChild(source.attributes.mask);
     const comp = JSON.parse(JSON.stringify(it.getLocalBounds()));
 
-    if (source.attributes.reversedMask === 'true') {
+    if (source.attributes.reversedMask === "true") {
       const reversedMask = new Graphics();
       drawReversedMask(comp, mask, reversedMask);
 
       it.addChild(reversedMask);
       it.mask = reversedMask;
 
-      it.updateMask = function({x, y, width, height}) {
+      it.updateMask = function ({ x, y, width, height }) {
         if (width !== undefined) {
-          mask.x -= (width - mask.width);
+          mask.x -= width - mask.width;
           mask.width = width;
         }
         if (height !== undefined) {
-          mask.y -= (height - mask.height);
+          mask.y -= height - mask.height;
           mask.height = height;
         }
         if (x !== undefined) mask.x = x;
@@ -148,7 +130,7 @@ function topComponent(source) {
     } else {
       it.mask = mask;
 
-      it.updateMask = function({x, y, width, height}) {
+      it.updateMask = function ({ x, y, width, height }) {
         if (x !== undefined) mask.x = x;
         if (y !== undefined) mask.y = y;
         if (width !== undefined) mask.width = width;
@@ -157,7 +139,7 @@ function topComponent(source) {
     }
   }
 
-  if (source.attributes.overflow === 'hidden') {
+  if (source.attributes.overflow === "hidden") {
     hidden(source.attributes);
   }
 
@@ -165,12 +147,12 @@ function topComponent(source) {
 
   function hidden(attributes) {
     const mask = new Graphics();
-    mask.name = 'mask';
+    mask.name = "mask";
 
     mask.beginFill(0x000);
 
     const [width, height] = toPair(attributes.size);
-    const [x, y] = toPair(attributes.xy || '0,0');
+    const [x, y] = toPair(attributes.xy || "0,0");
 
     mask.drawRect(x, y, width, height);
     mask.endFill();
@@ -180,7 +162,7 @@ function topComponent(source) {
 
     it._addChild = it.addChild;
 
-    it.addChild = function(...args) {
+    it.addChild = function (...args) {
       it._addChild(...args);
       it.setChildIndex(mask, it.children.length - 1);
     };
@@ -194,27 +176,22 @@ function drawReversedMask(comp, mask, it) {
   const holeY = Math.max(0, mask.y);
   const holeW = Math.min(
     comp.width,
-    mask.x >= 0 ? mask.width : mask.width + mask.x,
+    mask.x >= 0 ? mask.width : mask.width + mask.x
   );
   const holeH = Math.min(
     comp.height,
-    mask.y >= 0 ? mask.height : mask.height + mask.y,
+    mask.y >= 0 ? mask.height : mask.height + mask.y
   );
 
   it.clear();
 
   return it
-    .lineStyle(0)
-    .beginFill(0xFFFF0B, 0.5)
-    .moveTo(0, 0)
-    .lineTo(comp.width, 0)
-    .lineTo(comp.width, comp.height)
-    .lineTo(0, comp.height)
-    .moveTo(holeX, holeY)
-    .lineTo(holeX + holeW, holeY)
-    .lineTo(holeX + holeW, holeY + holeH)
-    .lineTo(holeX, holeY + holeH)
-    .addHole();
+    .beginFill(0xffff0b)
+    .drawRect(0, 0, comp.width, comp.height)
+    .beginHole()
+    .drawRect(holeX, holeY, holeW, holeH)
+    .endHole()
+    .endFill();
 }
 
 /*
@@ -225,7 +202,7 @@ function drawReversedMask(comp, mask, it) {
  *  2. subComponent is a collection contains other elements.
  */
 export function component(source) {
-  const {attributes} = source;
+  const { attributes } = source;
 
   if (attributes.src) return subComponent(attributes);
 
